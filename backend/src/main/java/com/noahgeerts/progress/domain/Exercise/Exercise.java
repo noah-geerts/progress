@@ -1,12 +1,10 @@
-package com.noahgeerts.progress.domain;
+package com.noahgeerts.progress.domain.Exercise;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,19 +15,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Set {
+public class Exercise {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private Long stid;
+  private Long eid;
 
   @Column(nullable = false)
-  private int order;
+  private String name;
   @Column(nullable = false)
-  private int reps;
-  @Column(nullable = false)
-  private double weight;
-
-  @ManyToOne
-  @JoinColumn(name = "peid")
-  private PerformedExercise performedExercise;
+  private String uid;
 }
