@@ -58,8 +58,12 @@ GET /sessions/{date}
 ### Create Session
 
 ```http
-POST /sessions
+POST /sessions{date}
 ```
+
+**Parameters:**
+
+- `date` (path parameter): Date in ISO format (YYYY-MM-DD)
 
 **Request Body:**
 
