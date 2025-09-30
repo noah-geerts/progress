@@ -1,4 +1,4 @@
-package com.noahgeerts.progress.domain.Set;
+package com.noahgeerts.progress.domain.PerformedSet;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateSetDto {
+public class CreatePerformedSetDto {
   private Long peid;
-  private int order;
+  private int position;
   private int reps;
   private double weight;
 }

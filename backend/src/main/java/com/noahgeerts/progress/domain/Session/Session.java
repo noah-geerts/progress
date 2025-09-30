@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Session {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long ssid;
 
   @Column(nullable = false)
@@ -35,6 +35,6 @@ public class Session {
   @Column(nullable = false)
   private String uid;
 
-  @OneToMany(mappedBy = "ssid", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   private List<PerformedExercise> performedExercises;
 }

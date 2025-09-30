@@ -1,4 +1,4 @@
-package com.noahgeerts.progress.domain.Set;
+package com.noahgeerts.progress.domain.Exercise;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UpdateSetDto {
-  private int reps;
-  private double weight;
+public class ExerciseRequestDto {
+  private String name;
 }

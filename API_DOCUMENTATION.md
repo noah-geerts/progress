@@ -37,7 +37,7 @@ GET /sessions/{date}
   "performedExercises": [
     {
       "peid": 456,
-      "order": 1,
+      "position": 1,
       "exercise": {
         "eid": 789,
         "name": "Bench Press"
@@ -45,7 +45,7 @@ GET /sessions/{date}
       "sets": [
         {
           "stid": 101,
-          "order": 1,
+          "position": 1,
           "reps": 8,
           "weight": 225.5
         }
@@ -211,7 +211,7 @@ POST /performed-exercises
 {
   "eid": 789,
   "ssid": 123,
-  "order": 1
+  "position": 1
 }
 ```
 
@@ -220,7 +220,7 @@ POST /performed-exercises
 ```json
 {
   "peid": 456,
-  "order": 1,
+  "position": 1,
   "exercise": {
     "eid": 789,
     "name": "Bench Press"
@@ -252,7 +252,7 @@ PATCH /performed-exercises/{peid}
 ```json
 {
   "peid": 456,
-  "order": 1,
+  "position": 1,
   "exercise": {
     "eid": 790,
     "name": "Squat"
@@ -279,9 +279,9 @@ DELETE /performed-exercises/{peid}
 
 ---
 
-## Set Endpoints
+## PerformedSet Endpoints
 
-### Create Set
+### Create PerformedSet
 
 ```http
 POST /sets
@@ -292,7 +292,7 @@ POST /sets
 ```json
 {
   "peid": 456,
-  "order": 1,
+  "position": 1,
   "reps": 8,
   "weight": 225.5
 }
@@ -303,13 +303,13 @@ POST /sets
 ```json
 {
   "stid": 101,
-  "order": 1,
+  "position": 1,
   "reps": 8,
   "weight": 225.5
 }
 ```
 
-### Update Set
+### Update PerformedSet
 
 ```http
 PATCH /sets/{stid}
@@ -317,7 +317,7 @@ PATCH /sets/{stid}
 
 **Parameters:**
 
-- `stid` (path parameter): Set ID
+- `stid` (path parameter): PerformedSet ID
 
 **Request Body:**
 
@@ -333,13 +333,13 @@ PATCH /sets/{stid}
 ```json
 {
   "stid": 101,
-  "order": 1,
+  "position": 1,
   "reps": 10,
   "weight": 230.0
 }
 ```
 
-### Delete Set
+### Delete PerformedSet
 
 ```http
 DELETE /sets/{stid}
@@ -347,7 +347,7 @@ DELETE /sets/{stid}
 
 **Parameters:**
 
-- `stid` (path parameter): Set ID
+- `stid` (path parameter): PerformedSet ID
 
 **Response:**
 
@@ -410,7 +410,7 @@ Used for creating and updating sessions.
 {
   "eid": "number",
   "ssid": "number",
-  "order": "number"
+  "position": "number"
 }
 ```
 
@@ -427,20 +427,20 @@ Used for creating and updating sessions.
 ```json
 {
   "peid": "number",
-  "order": "number",
+  "position": "number",
   "exercise": "ExerciseResponseDto",
   "sets": "SetResponseDto[]"
 }
 ```
 
-### Set DTOs
+### PerformedSet DTOs
 
 #### CreateSetDto
 
 ```json
 {
   "peid": "number",
-  "order": "number",
+  "position": "number",
   "reps": "number",
   "weight": "number"
 }
@@ -460,7 +460,7 @@ Used for creating and updating sessions.
 ```json
 {
   "stid": "number",
-  "order": "number",
+  "position": "number",
   "reps": "number",
   "weight": "number"
 }
@@ -521,4 +521,4 @@ Used for creating and updating sessions.
 5. Deleting a session will cascade delete all associated performed exercises and sets
 6. Deleting a performed exercise will cascade delete all associated sets
 7. Exercise deletion does not cascade (performed exercises will retain references)
-8. The `order` field determines the sequence of performed exercises within a session and sets within a performed exercise
+8. The `position` field determines the sequence of performed exercises within a session and sets within a performed exercise
