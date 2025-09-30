@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class CreatePerformedExerciseDto {
   private Long eid;
   private Long ssid;
-  private int order;
+  private int position;
 }

@@ -1,9 +1,9 @@
 import type { ExerciseResponseDto } from "../Exercise/Exercise";
-import type { SetReponseDto } from "../Set/Set";
+import type { SetReponseDto } from "../PerformedSet/PerformedSet";
 
 export interface PerformedExerciseResponseDto {
   peid: number;
-  order: number;
+  position: number;
   exercise: ExerciseResponseDto;
   sets: SetReponseDto[];
 }

@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.noahgeerts.progress.domain.Exercise.Exercise;
 import com.noahgeerts.progress.domain.Session.Session;
-import com.noahgeerts.progress.domain.Set.Set;
+import com.noahgeerts.progress.domain.PerformedSet.PerformedSet;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,20 +28,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PerformedExercise {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long peid;
 
   @Column(nullable = false)
-  private int order;
+  private int position;
 
   @ManyToOne
-  @JoinColumn(name = "ssid")
   private Session session;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "eid")
   private Exercise exercise;
 
-  @OneToMany(mappedBy = "peid", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-  private List<Set> sets;
+  @OneToMany(mappedBy = "performedExercise", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  private List<PerformedSet> sets;
 }

@@ -1,4 +1,4 @@
-package com.noahgeerts.progress.domain.Set;
+package com.noahgeerts.progress.domain.PerformedSet;
 
 import com.noahgeerts.progress.domain.PerformedExercise.PerformedExercise;
 
@@ -19,19 +19,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Set {
+public class PerformedSet {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long stid;
 
   @Column(nullable = false)
-  private int order;
+  private int position;
   @Column(nullable = false)
   private int reps;
   @Column(nullable = false)
   private double weight;
 
   @ManyToOne
-  @JoinColumn(name = "peid")
   private PerformedExercise performedExercise;
 }

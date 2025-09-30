@@ -1,6 +1,6 @@
 export interface SetReponseDto {
   stid: number;
-  order: number;
+  position: number;
   reps: number;
   weight: number;
 }

@@ -38,7 +38,7 @@ All Performed Exercises will be sorted by order increasing, as well as all sets 
   "performedExercises": [
     {
       "peid": 456,
-      "order": 1,
+      "position": 1,
       "exercise": {
         "eid": 789,
         "name": "Bench Press"
@@ -46,7 +46,7 @@ All Performed Exercises will be sorted by order increasing, as well as all sets 
       "sets": [
         {
           "stid": 101,
-          "order": 1,
+          "position": 1,
           "reps": 8,
           "weight": 225.5
         }
@@ -57,6 +57,7 @@ All Performed Exercises will be sorted by order increasing, as well as all sets 
 ```
 
 **Error Responses:**
+
 - 404 Not Found if the Session does not exist
 
 ### Create Session
@@ -90,6 +91,7 @@ POST /sessions{date}
 ```
 
 **Error Responses:**
+
 - 409 Conflict if there is already a session for the given date
 
 ### Update Session
@@ -123,6 +125,7 @@ PATCH /sessions/{date}
 ```
 
 **Error Responses:**
+
 - 404 Not Found if there is no session yet on the given day
 
 ### Delete Session
@@ -142,6 +145,7 @@ DELETE /sessions/{date}
 ```
 
 **Error Responses:**
+
 - 404 Not Found if there is no session yet on the given day
 
 ---
@@ -194,8 +198,8 @@ POST /exercises
 }
 ```
 
-
 **Error Responses:**
+
 - 409 Conflict if there is already an exercise with the given name
 
 ### Update Exercise
@@ -226,6 +230,7 @@ PATCH /exercises/{eid}
 ```
 
 **Error Responses:**
+
 - 404 Not Found if there is no exercise with the given eid
 - 409 Conflict if there is already an exercise with the given name
 
@@ -246,6 +251,7 @@ DELETE /exercises/{eid}
 ```
 
 **Error Responses:**
+
 - 404 Not Found if there is no exercise with the given eid
 - 422 Unprocessable Entity if the exercise cannot be deleted because it is used in Performed Exercises
 
@@ -265,7 +271,7 @@ POST /performed-exercises
 {
   "eid": 789,
   "ssid": 123,
-  "order": 1
+  "position": 1
 }
 ```
 
@@ -274,7 +280,7 @@ POST /performed-exercises
 ```json
 {
   "peid": 456,
-  "order": 1,
+  "position": 1,
   "exercise": {
     "eid": 789,
     "name": "Bench Press"
@@ -284,6 +290,7 @@ POST /performed-exercises
 ```
 
 **Error Responses:**
+
 - 409 Conflict if there is already a Performed Exercise with the given ssid and order
 - 422 Unprocessable Entity if the ssid or eid do not correspond to a valid session or exercise
 
@@ -310,7 +317,7 @@ PATCH /performed-exercises/{peid}
 ```json
 {
   "peid": 456,
-  "order": 1,
+  "position": 1,
   "exercise": {
     "eid": 790,
     "name": "Squat"
@@ -320,6 +327,7 @@ PATCH /performed-exercises/{peid}
 ```
 
 **Error Responses:**
+
 - 422 Unprocessable Entity if the eid does not correspond to a valid exercise
 
 ### Delete Performed Exercise
@@ -339,13 +347,14 @@ DELETE /performed-exercises/{peid}
 ```
 
 **Error Responses:**
+
 - 404 Not Found if the Performed Exercise does not exit
 
 ---
 
-## Set Endpoints
+## PerformedSet Endpoints
 
-### Create Set
+### Create PerformedSet
 
 ```http
 POST /sets
@@ -356,7 +365,7 @@ POST /sets
 ```json
 {
   "peid": 456,
-  "order": 1,
+  "position": 1,
   "reps": 8,
   "weight": 225.5
 }
@@ -367,17 +376,18 @@ POST /sets
 ```json
 {
   "stid": 101,
-  "order": 1,
+  "position": 1,
   "reps": 8,
   "weight": 225.5
 }
 ```
 
 **Error Responses:**
+
 - 409 Conflict if a Set already exists with the given order and peid
 - 422 Unprocessable Entity if the provided peid does not correspond to a valid Performed Exercise
 
-### Update Set
+### Update PerformedSet
 
 ```http
 PATCH /sets/{stid}
@@ -385,7 +395,7 @@ PATCH /sets/{stid}
 
 **Parameters:**
 
-- `stid` (path parameter): Set ID
+- `stid` (path parameter): PerformedSet ID
 
 **Request Body:**
 
@@ -401,16 +411,17 @@ PATCH /sets/{stid}
 ```json
 {
   "stid": 101,
-  "order": 1,
+  "position": 1,
   "reps": 10,
   "weight": 230.0
 }
 ```
 
 **Error Responses:**
+
 - 404 Not Found if the set with the given stid does not exist
 
-### Delete Set
+### Delete PerformedSet
 
 ```http
 DELETE /sets/{stid}
@@ -418,7 +429,7 @@ DELETE /sets/{stid}
 
 **Parameters:**
 
-- `stid` (path parameter): Set ID
+- `stid` (path parameter): PerformedSet ID
 
 **Response:**
 
@@ -427,6 +438,7 @@ DELETE /sets/{stid}
 ```
 
 **Error Responses:**
+
 - 404 Not Found if the set with the given stid does not exist
 
 ---
@@ -484,7 +496,7 @@ Used for creating and updating sessions.
 {
   "eid": "number",
   "ssid": "number",
-  "order": "number"
+  "position": "number"
 }
 ```
 
@@ -501,20 +513,20 @@ Used for creating and updating sessions.
 ```json
 {
   "peid": "number",
-  "order": "number",
+  "position": "number",
   "exercise": "ExerciseResponseDto",
   "sets": "SetResponseDto[]"
 }
 ```
 
-### Set DTOs
+### PerformedSet DTOs
 
 #### CreateSetDto
 
 ```json
 {
   "peid": "number",
-  "order": "number",
+  "position": "number",
   "reps": "number",
   "weight": "number"
 }
@@ -534,7 +546,7 @@ Used for creating and updating sessions.
 ```json
 {
   "stid": "number",
-  "order": "number",
+  "position": "number",
   "reps": "number",
   "weight": "number"
 }
@@ -550,4 +562,4 @@ Used for creating and updating sessions.
 6. When creating sessions, the `date` is automatically set to the current date
 7. Deleting a session will cascade delete all associated performed exercises and sets
 8. Deleting a performed exercise will cascade delete all associated sets
-9. The `order` field determines the sequence of performed exercises within a session and sets within a performed exercise
+9. The `position` field determines the sequence of performed exercises within a session and sets within a performed exercise

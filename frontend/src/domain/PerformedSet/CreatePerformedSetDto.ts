@@ -1,6 +1,6 @@
 export interface CreateSetDto {
   peid: number;
-  order: number;
+  position: number;
   reps: number;
   weight: number;
 }
