@@ -55,6 +55,9 @@ GET /sessions/{date}
 }
 ```
 
+**Error Responses:**
+- 404 Not Found if the Session does not exist
+
 ### Create Session
 
 ```http
@@ -84,6 +87,9 @@ POST /sessions{date}
   "performedExercises": []
 }
 ```
+
+**Error Responses:**
+- 409 Conflict if there is already a session for the given date
 
 ### Update Session
 
@@ -115,6 +121,9 @@ PATCH /sessions/{date}
 }
 ```
 
+**Error Responses:**
+- 404 Not Found if there is no session yet on the given day
+
 ### Delete Session
 
 ```http
@@ -130,6 +139,9 @@ DELETE /sessions/{date}
 ```http
 204 No Content
 ```
+
+**Error Responses:**
+- 404 Not Found if there is no session yet on the given day
 
 ---
 
@@ -179,6 +191,41 @@ POST /exercises
 }
 ```
 
+
+**Error Responses:**
+- 409 Conflict if there is already an exercise with the given name
+
+### Update Exercise
+
+```http
+PATCH /exercises/{eid}
+```
+
+**Parameters:**
+
+- `eid` (path parameter): Exercise ID
+
+**Request Body:**
+
+```json
+{
+  "name": "Updated Exercise"
+}
+```
+
+**Response:**
+
+```json
+{
+  "eid": 791,
+  "name": "Updated Exercise"
+}
+```
+
+**Error Responses:**
+- 404 Not Found if there is no exercise with the given eid
+- 409 Conflict if there is already an exercise with the given name
+
 ### Delete Exercise
 
 ```http
@@ -194,6 +241,10 @@ DELETE /exercises/{eid}
 ```http
 204 No Content
 ```
+
+**Error Responses:**
+- 404 Not Found if there is no exercise with the given eid
+- 409 Unprocessable Entity if the exercise cannot be deleted because it is used in Performed Exercises
 
 ---
 
@@ -229,6 +280,10 @@ POST /performed-exercises
 }
 ```
 
+**Error Responses:**
+- 409 Conflict if there is already a Performed Exercise with the given ssid and order
+- 422 Unprocessable Entity if the ssid or eid do not correspond to a valid session or exercise
+
 ### Update Performed Exercise
 
 ```http
@@ -261,6 +316,9 @@ PATCH /performed-exercises/{peid}
 }
 ```
 
+**Error Responses:**
+- 422 Unprocessable Entity if the eid does not correspond to a valid exercise
+
 ### Delete Performed Exercise
 
 ```http
@@ -276,6 +334,9 @@ DELETE /performed-exercises/{peid}
 ```http
 204 No Content
 ```
+
+**Error Responses:**
+- 404 Not Found if the Performed Exercise does not exit
 
 ---
 
@@ -309,6 +370,10 @@ POST /sets
 }
 ```
 
+**Error Responses:**
+- 409 Conflict if a Set already exists with the given order and peid
+- 422 Unprocessable Entity if the provided peid does not correspond to a valid Performed Exercise
+
 ### Update Set
 
 ```http
@@ -339,6 +404,9 @@ PATCH /sets/{stid}
 }
 ```
 
+**Error Responses:**
+- 404 Not Found if the set with the given stid does not exist
+
 ### Delete Set
 
 ```http
@@ -354,6 +422,9 @@ DELETE /sets/{stid}
 ```http
 204 No Content
 ```
+
+**Error Responses:**
+- 404 Not Found if the set with the given stid does not exist
 
 ---
 
@@ -466,59 +537,14 @@ Used for creating and updating sessions.
 }
 ```
 
----
-
-## Error Responses
-
-### 400 Bad Request
-
-```json
-{
-  "error": "Bad Request",
-  "message": "Invalid request data",
-  "timestamp": "2024-09-25T14:30:00Z"
-}
-```
-
-### 401 Unauthorized
-
-```json
-{
-  "error": "Unauthorized",
-  "message": "Authentication required",
-  "timestamp": "2024-09-25T14:30:00Z"
-}
-```
-
-### 404 Not Found
-
-```json
-{
-  "error": "Not Found",
-  "message": "Resource not found",
-  "timestamp": "2024-09-25T14:30:00Z"
-}
-```
-
-### 500 Internal Server Error
-
-```json
-{
-  "error": "Internal Server Error",
-  "message": "An unexpected error occurred",
-  "timestamp": "2024-09-25T14:30:00Z"
-}
-```
-
----
-
 ## Notes
 
 1. All endpoints require authentication except those under `/public/*`
-2. Date parameters should be in ISO format (YYYY-MM-DD)
-3. The `uid` field is automatically populated from the authenticated user's JWT token
-4. When creating sessions, the `date` is automatically set to the current date
-5. Deleting a session will cascade delete all associated performed exercises and sets
-6. Deleting a performed exercise will cascade delete all associated sets
-7. Exercise deletion does not cascade (performed exercises will retain references)
-8. The `order` field determines the sequence of performed exercises within a session and sets within a performed exercise
+2. Unauthorized requests will receive a 401 response
+3. All requests with fields that do not match the backend Dto will receive 400 Bad Request when Jakarta validation catches the incorrect field(s)
+4. Date parameters should be in ISO format (YYYY-MM-DD)
+5. The `uid` field is automatically populated from the authenticated user's JWT token
+6. When creating sessions, the `date` is automatically set to the current date
+7. Deleting a session will cascade delete all associated performed exercises and sets
+8. Deleting a performed exercise will cascade delete all associated sets
+9. The `order` field determines the sequence of performed exercises within a session and sets within a performed exercise
