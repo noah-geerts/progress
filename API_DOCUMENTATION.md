@@ -27,6 +27,7 @@ GET /sessions/{date}
 - `date` (path parameter): Date in ISO format (YYYY-MM-DD)
 
 **Response:**
+All Performed Exercises will be sorted by order increasing, as well as all sets within them.
 
 ```json
 {
@@ -154,6 +155,8 @@ GET /exercises
 ```
 
 **Response:**
+
+Exercises will be sorted alphabetically by name
 
 ```json
 [
