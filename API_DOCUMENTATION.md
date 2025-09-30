@@ -244,7 +244,7 @@ DELETE /exercises/{eid}
 
 **Error Responses:**
 - 404 Not Found if there is no exercise with the given eid
-- 409 Unprocessable Entity if the exercise cannot be deleted because it is used in Performed Exercises
+- 422 Unprocessable Entity if the exercise cannot be deleted because it is used in Performed Exercises
 
 ---
 
