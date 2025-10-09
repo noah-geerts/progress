@@ -29,6 +29,7 @@ export default function ApiProvider({
   api.interceptors.request.use(
     async (request) => {
       const accessToken = await getAccessTokenSilently();
+      console.log(accessToken);
       if (accessToken) {
         request.headers.Authorization = `Bearer ${accessToken}`;
       }

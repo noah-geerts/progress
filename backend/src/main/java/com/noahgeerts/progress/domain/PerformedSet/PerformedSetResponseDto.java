@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PerformedSetReponseDto {
+public class PerformedSetResponseDto {
   private Long stid;
 
-  private int position;
-  private int reps;
-  private double weight;
+  private Integer position;
+  private Integer reps;
+  private Double weight;
 }

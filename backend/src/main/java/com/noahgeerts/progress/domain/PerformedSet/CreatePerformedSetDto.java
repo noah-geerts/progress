@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CreatePerformedSetDto {
   private Long peid;
-  private int position;
-  private int reps;
-  private double weight;
+  private Integer position;
+  private Integer reps;
+  private Double weight;
 }

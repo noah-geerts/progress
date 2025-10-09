@@ -3,7 +3,7 @@ package com.noahgeerts.progress.domain.PerformedExercise;
 import java.util.List;
 
 import com.noahgeerts.progress.domain.Exercise.ExerciseResponseDto;
-import com.noahgeerts.progress.domain.PerformedSet.PerformedSetReponseDto;
+import com.noahgeerts.progress.domain.PerformedSet.PerformedSetResponseDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class PerformedExerciseResponseDto {
   private Long peid;
 
-  private int position;
+  private Integer position;
   private ExerciseResponseDto exercise;
-  private List<PerformedSetReponseDto> sets;
+  private List<PerformedSetResponseDto> sets;
 }

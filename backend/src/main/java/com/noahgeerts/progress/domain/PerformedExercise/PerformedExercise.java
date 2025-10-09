@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -37,9 +38,13 @@ public class PerformedExercise {
   @ManyToOne
   private Session session;
 
+  @Column(nullable = false)
+  private String uid;
+
   @ManyToOne(fetch = FetchType.EAGER)
   private Exercise exercise;
 
   @OneToMany(mappedBy = "performedExercise", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @ToString.Exclude
   private List<PerformedSet> sets;
 }

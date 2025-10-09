@@ -11,4 +11,6 @@ public interface ExerciseRepository extends CrudRepository<Exercise, Long> {
   public List<Exercise> findAllByUidOrderByNameAsc(String uid);
 
   public Optional<Exercise> findByNameAndUid(String name, String uid);
+
+  public Optional<Exercise> findByEidAndUid(Long eid, String uid);
 }

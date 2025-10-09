@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UpdatePerformedSetDto {
-  private int reps;
-  private double weight;
+  private Integer reps;
+  private Double weight;
 }

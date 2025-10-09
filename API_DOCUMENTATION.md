@@ -329,6 +329,7 @@ PATCH /performed-exercises/{peid}
 **Error Responses:**
 
 - 422 Unprocessable Entity if the eid does not correspond to a valid exercise
+- 404 Not Found if the Performed Exercise does not exist
 
 ### Delete Performed Exercise
 
@@ -348,7 +349,7 @@ DELETE /performed-exercises/{peid}
 
 **Error Responses:**
 
-- 404 Not Found if the Performed Exercise does not exit
+- 404 Not Found if the Performed Exercise does not exist
 
 ---
 
