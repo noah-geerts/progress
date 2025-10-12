@@ -107,7 +107,11 @@ public class PerformedExerciseService {
       throw new ResourceNotFoundException(
           "The given peid does not correspond to a valid PerformedExercise for this user");
 
-    // Delete it
-    peRepo.delete(existingPE.get());
+    // Delete it (and remove it from its parent session)
+    PerformedExercise pe = existingPE.get();
+    Session session = pe.getSession();
+    session.getPerformedExercises().remove(pe);
+    sessionRepo.save(session);
+    peRepo.delete(pe);
   }
 }

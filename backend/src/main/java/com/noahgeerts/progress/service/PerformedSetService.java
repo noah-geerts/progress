@@ -97,8 +97,12 @@ public class PerformedSetService {
     if (existing.isEmpty())
       throw new ResourceNotFoundException("PerformedSet with the given stid does not exist for this user");
 
-    // Delete it
-    setRepo.delete(existing.get());
+    // Delete it (and remove it from its parent performed exercise)
+    PerformedSet set = existing.get();
+    PerformedExercise pe = set.getPerformedExercise();
+    pe.getSets().remove(set);
+    peRepo.save(pe);
+    setRepo.delete(set);
   }
 
 }
