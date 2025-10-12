@@ -1,16 +1,15 @@
 package com.noahgeerts.progress.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
@@ -72,16 +71,16 @@ public class PerformedSetServiceTests {
     when(setRepo.findByPerformedExercise_PeidAndPositionAndUid(0L, 0, "uid"))
         .thenReturn(Optional.empty());
     when(peRepo.findByPeidAndUid(0L, "uid")).thenReturn(Optional.of(exercise));
-    PerformedSet newExercise = PerformedSet.builder().weight(20.2).position(0).uid("uid").performedExercise(exercise)
+    PerformedSet newExercise = PerformedSet.builder().weight(20.2).reps(10).position(0).uid("uid").performedExercise(exercise)
         .build();
     when(setRepo.save(newExercise)).thenReturn(newExercise);
 
     // Act
-    CreatePerformedSetDto dto = CreatePerformedSetDto.builder().peid(0L).weight(20.2).position(0).build();
+    CreatePerformedSetDto dto = CreatePerformedSetDto.builder().peid(0L).weight(20.2).reps(10).position(0).build();
     PerformedSetResponseDto result = underTest.createPerformedSet("uid", dto);
 
     // Assert6
-    PerformedSetResponseDto expected = PerformedSetResponseDto.builder().weight(20.2).position(0).build();
+    PerformedSetResponseDto expected = PerformedSetResponseDto.builder().weight(20.2).reps(10).position(0).build();
     assertThat(expected).isEqualTo(result);
   }
 
@@ -99,8 +98,8 @@ public class PerformedSetServiceTests {
   @Test
   public void updatePerformedSet_SetExists_UpdatesSuccessfully() {
     // Arrange (set repo does find the set)
-    PerformedSet oldSet = PerformedSet.builder().weight(10.1).reps(5).stid(0L).build();
-    PerformedSet newSet = PerformedSet.builder().weight(20.2).reps(10).stid(0L).build();
+    PerformedSet oldSet = PerformedSet.builder().weight(10.1).position(5).reps(5).stid(0L).build();
+    PerformedSet newSet = PerformedSet.builder().weight(20.2).position(5).reps(10).stid(0L).build();
     when(setRepo.findByStidAndUid(0L, "uid")).thenReturn(Optional.of(oldSet));
     when(setRepo.save(newSet)).thenReturn(newSet);
 
@@ -110,7 +109,7 @@ public class PerformedSetServiceTests {
     PerformedSetResponseDto result = underTest.updatePerformedSet("uid", 0L, dto);
 
     // Assert
-    PerformedSetResponseDto expected = PerformedSetResponseDto.builder().weight(20.2).reps(10).stid(0L).build();
+    PerformedSetResponseDto expected = PerformedSetResponseDto.builder().weight(20.2).position(5).reps(10).stid(0L).build();
     assertThat(expected).isEqualTo(result);
   }
 

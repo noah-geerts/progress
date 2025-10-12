@@ -1,18 +1,11 @@
 package com.noahgeerts.progress.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,13 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noahgeerts.progress.domain.Exercise.Exercise;
 import com.noahgeerts.progress.domain.PerformedExercise.CreatePerformedExerciseDto;
 import com.noahgeerts.progress.domain.PerformedExercise.PerformedExercise;
-import com.noahgeerts.progress.domain.PerformedExercise.UpdatePerformedExerciseDto;
 import com.noahgeerts.progress.domain.PerformedSet.PerformedSet;
 import com.noahgeerts.progress.domain.Session.Session;
 import com.noahgeerts.progress.repository.ExerciseRepository;
@@ -61,12 +59,6 @@ public class PerformedExerciseControllerIntegrationTests {
 
     @BeforeEach
     void setup() {
-        // Clear all repositories
-        sessionRepo.deleteAll();
-        peRepo.deleteAll();
-        exerciseRepo.deleteAll();
-        setRepo.deleteAll();
-
         // Seed exercises
         seededExercises = List.of(Exercise.builder().name("Bench Press").uid(TEST_UID).build(),
                 Exercise.builder().name("Dumbell Press").uid(TEST_UID).build(),
@@ -114,6 +106,15 @@ public class PerformedExerciseControllerIntegrationTests {
                                 .build());
 
         setRepo.saveAll(seededSets);
+    }
+
+    @AfterEach
+    void teardown() {
+        // Clear all repositories
+        sessionRepo.deleteAll();
+        peRepo.deleteAll();
+        exerciseRepo.deleteAll();
+        setRepo.deleteAll();
     }
 
     @Nested

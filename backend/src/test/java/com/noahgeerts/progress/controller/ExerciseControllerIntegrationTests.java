@@ -1,32 +1,36 @@
 package com.noahgeerts.progress.controller;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Nested;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.noahgeerts.progress.domain.Exercise.Exercise;
-import com.noahgeerts.progress.domain.Exercise.ExerciseRequestDto;
-import com.noahgeerts.progress.domain.Exercise.ExerciseResponseDto;
-import com.noahgeerts.progress.repository.ExerciseRepository;
-
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.noahgeerts.progress.domain.Exercise.Exercise;
+import com.noahgeerts.progress.domain.Exercise.ExerciseRequestDto;
+import com.noahgeerts.progress.domain.Exercise.ExerciseResponseDto;
+import com.noahgeerts.progress.repository.ExerciseRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -47,13 +51,17 @@ public class ExerciseControllerIntegrationTests {
 
   @BeforeEach
   void setup() {
-    exerciseRepository.deleteAll();
     List<Exercise> seedExercises = List.of(Exercise.builder().name("Bench Press").uid(TEST_UID).build(),
         Exercise.builder().name("Dumbell Press").uid(TEST_UID).build(),
         Exercise.builder().name("Squat").uid(TEST_UID).build());
     Iterable<Exercise> saved = exerciseRepository.saveAll(seedExercises);
     this.seededExercises = StreamSupport.stream(saved.spliterator(), false)
         .collect(Collectors.toList());
+  }
+
+  @AfterEach
+  void teardown () {
+    exerciseRepository.deleteAll();
   }
 
   @Nested

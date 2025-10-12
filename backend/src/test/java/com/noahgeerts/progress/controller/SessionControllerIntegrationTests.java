@@ -4,14 +4,23 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noahgeerts.progress.domain.Exercise.Exercise;
@@ -23,12 +32,6 @@ import com.noahgeerts.progress.repository.ExerciseRepository;
 import com.noahgeerts.progress.repository.PerformedExerciseRepository;
 import com.noahgeerts.progress.repository.PerformedSetRepository;
 import com.noahgeerts.progress.repository.SessionRepository;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -56,12 +59,6 @@ public class SessionControllerIntegrationTests {
 
   @BeforeEach
   void setup() {
-    // Clear all repositories
-    sessionRepo.deleteAll();
-    peRepo.deleteAll();
-    exerciseRepo.deleteAll();
-    setRepo.deleteAll();
-
     // Seed exercises
     seededExercises = List.of(Exercise.builder().name("Bench Press").uid(TEST_UID).build(),
         Exercise.builder().name("Dumbell Press").uid(TEST_UID).build(),
@@ -106,6 +103,14 @@ public class SessionControllerIntegrationTests {
     setRepo.saveAll(seededSets);
   }
 
+  @AfterEach 
+  void teardown() {
+    // Clear all repositories
+    sessionRepo.deleteAll();
+    peRepo.deleteAll();
+    exerciseRepo.deleteAll();
+    setRepo.deleteAll();
+  }
   @Nested
   class GetSession {
     @Test
