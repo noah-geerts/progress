@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.noahgeerts.progress.domain.Exercise.Exercise;
 import com.noahgeerts.progress.domain.PerformedExercise.CreatePerformedExerciseDto;
 import com.noahgeerts.progress.domain.PerformedExercise.PerformedExercise;
@@ -317,24 +319,85 @@ public class PerformedExerciseControllerIntegrationTests {
                         Long peid = seededPEs.get(0).getPeid();
 
                         // Act
-                        mockMvc.perform(delete("/performed-exercises/" + peid).with(createTestJWT())).andExpect(status().isNoContent());
+                        mockMvc.perform(delete("/performed-exercises/" + peid).with(createTestJWT()))
+                                        .andExpect(status().isNoContent());
 
                         // Assert
                         Optional<PerformedExercise> shouldBeDeleted = peRepo.findById(peid);
                         assertThat(shouldBeDeleted).isEmpty();
                 }
-                
+
                 @Test
                 void shouldReturnNotFound_whenPeidIsNotValid() throws Exception {
                         // Arrange
                         Long peid = Long.MAX_VALUE;
 
                         // Act
-                        mockMvc.perform(delete("/performed-exercises/" + peid).with(createTestJWT())).andExpect(status().isNotFound());
+                        mockMvc.perform(delete("/performed-exercises/" + peid).with(createTestJWT()))
+                                        .andExpect(status().isNotFound());
 
                         // Assert (nothing was deleted)
                         Iterable<PerformedExercise> pes = peRepo.findAll();
                         assertThat(pes).hasSize(3);
+                }
+        }
+
+        @Nested
+        class Workflows {
+                @Test
+                void shouldUpdateDBCorrectly_whenCreatingUpdatingDeleting() throws Exception {
+                        // Arrange: create a new PerformedExercise
+                        Long eid = seededExercises.get(0).getEid();
+                        Long ssid = seededSessions.get(0).getSsid();
+                        int position = 3; // not used yet
+                        String createRequest = objectMapper.writeValueAsString(
+                                        CreatePerformedExerciseDto.builder().eid(eid).ssid(ssid).position(position)
+                                                        .build());
+
+                        // Act (create)
+                        MvcResult createResult;
+                        createResult = mockMvc.perform(
+                                        post("/performed-exercises").with(createTestJWT())
+                                                        .contentType("application/json").content(createRequest))
+                                        .andExpect(status().isCreated())
+                                        .andExpect(jsonPath("$.exercise.eid").value(eid))
+                                        .andExpect(jsonPath("$.position").value(position))
+                                        .andReturn();
+
+                        // Assert (created in DB)
+                        String createContent = createResult.getResponse().getContentAsString();
+                        Number number = JsonPath.read(createContent, "$.peid");
+                        Long peid = number.longValue();
+                        Optional<PerformedExercise> created = peRepo.findById(peid);
+                        assertThat(created).isNotEmpty();
+                        assertThat(created.get().getExercise().getEid()).isEqualTo(eid);
+                        assertThat(created.get().getPosition()).isEqualTo(position);
+
+                        // Arrange (update: change exercise)
+                        Long newEid = seededExercises.get(1).getEid();
+                        String updateRequest = objectMapper.writeValueAsString(
+                                        UpdatePerformedExerciseDto.builder().eid(newEid).build());
+
+                        // Act (update)
+                        mockMvc.perform(
+                                        patch("/performed-exercises/" + peid).with(createTestJWT())
+                                                        .contentType("application/json").content(updateRequest))
+                                        .andExpect(status().isOk())
+                                        .andExpect(jsonPath("$.peid").value(peid))
+                                        .andExpect(jsonPath("$.exercise.eid").value(newEid));
+
+                        // Assert (updated in DB)
+                        Optional<PerformedExercise> updated = peRepo.findById(peid);
+                        assertThat(updated).isNotEmpty();
+                        assertThat(updated.get().getExercise().getEid()).isEqualTo(newEid);
+
+                        // Act (delete)
+                        mockMvc.perform(delete("/performed-exercises/" + peid).with(createTestJWT()))
+                                        .andExpect(status().isNoContent());
+
+                        // Assert (deleted from DB)
+                        Optional<PerformedExercise> deleted = peRepo.findById(peid);
+                        assertThat(deleted).isEmpty();
                 }
         }
 
