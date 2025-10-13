@@ -3,20 +3,17 @@ import { createRoot } from "react-dom/client";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import ApiProvider from "./ApiProvider";
+import ApiProvider from "./wrappers/ApiProvider";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import Home from "./Home";
-import Dash from "./Dash";
-import AuthGuard from "./AuthGuard";
+import Dash from "./pages/Dash";
+import AuthGuard from "./wrappers/AuthGuard";
+import { ConfigProvider, theme } from "antd";
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
-  {
-    path: "/loggedout",
-    element: <p>logged out allowed</p>,
-  },
   {
     path: "/",
     element: <Home></Home>,
@@ -25,12 +22,8 @@ const router = createBrowserRouter([
     element: <AuthGuard />,
     children: [
       {
-        path: "loggedin",
+        path: "dashboard",
         element: <Dash />,
-      },
-      {
-        path: "loggedin2",
-        element: <p>loggedin2</p>,
       },
     ],
   },
@@ -48,7 +41,9 @@ createRoot(document.getElementById("root")!).render(
     >
       <ApiProvider>
         <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
+          <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
+            <RouterProvider router={router} />
+          </ConfigProvider>
         </QueryClientProvider>
       </ApiProvider>
     </Auth0Provider>

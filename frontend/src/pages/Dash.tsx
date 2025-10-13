@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useApi } from "./ApiProvider";
+import { useApi } from "../wrappers/ApiProvider";
 
 export default function Dash() {
   const api = useApi();
