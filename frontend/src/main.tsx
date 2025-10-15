@@ -7,9 +7,10 @@ import ApiProvider from "./wrappers/ApiProvider";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import Home from "./Home";
-import Dash from "./pages/Dash";
+import Session from "./pages/Session";
 import AuthGuard from "./wrappers/AuthGuard";
 import { ConfigProvider, theme } from "antd";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +24,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "dashboard",
-        element: <Dash />,
+        element: <Dashboard />,
+      },
+      {
+        path: "session",
+        element: <Session />,
       },
     ],
   },
