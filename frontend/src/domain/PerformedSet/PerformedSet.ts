@@ -1,4 +1,4 @@
-export interface SetReponseDto {
+export interface SetResponseDto {
   stid: number;
   position: number;
   reps: number;
