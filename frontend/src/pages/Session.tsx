@@ -1,43 +1,45 @@
 import { useState } from "react";
-import { getWeekStart, addWeeks, formatWeekLabel } from "../misc/dateHelpers";
 import { Button, FloatButton, Modal, theme } from "antd";
 import P from "../components/P";
 import { useAuth0 } from "@auth0/auth0-react";
 import { NavLink } from "react-router";
-import ExerciseCard from "../components/ExerciseCard";
+import ExerciseCard from "../components/PECard";
 import { LeftOutlined, RightOutlined, PlusOutlined } from "@ant-design/icons";
 import SessionColumn from "../components/SessionColumn";
-import { useApi } from "../wrappers/ApiProvider";
+import dayjs from "dayjs";
+import type { Dayjs } from "dayjs";
 import { useGetWeeklySessions } from "../services/sessionService";
 import AddSessionModal from "../components/AddSessionModal";
 
 export default function Session() {
-  // weekStart stores the Date for the Monday of the current week view
-  const [weekStart, setWeekStart] = useState<Date>(() =>
-    getWeekStart(new Date())
-  );
+  // weekStart stores the date for the Monday of the current week view
+  const today = dayjs();
+  const thisSunday = today.startOf("week"); // Sunday of this week
+  const thisMonday = thisSunday.add(1, "day"); // Monday of this week
+  const [weekStart, setWeekStart] = useState<Dayjs>(thisMonday);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { logout } = useAuth0();
   const sessions = useGetWeeklySessions(weekStart);
 
   const handleDecreaseWeek: React.MouseEventHandler<HTMLElement> = () => {
-    setWeekStart((prev) => addWeeks(prev, -1));
+    setWeekStart((prev) => prev.subtract(1, "week"));
   };
 
   const handleIncreaseWeek: React.MouseEventHandler<HTMLElement> = () => {
-    setWeekStart((prev) => addWeeks(prev, 1));
+    setWeekStart((prev) => prev.add(1, "week"));
   };
 
   return (
     <div className="w-full h-full flex flex-col items-center">
-      <AddSessionModal open={isModalOpen} setOpen={setIsModalOpen} />
+      {isModalOpen && <AddSessionModal setOpen={setIsModalOpen} />}
       <FloatButton
         shape="circle"
         type="primary"
         icon={<PlusOutlined />}
         onClick={() => setIsModalOpen(true)}
-      ></FloatButton>
+      />
+
       <nav className="w-full h-16 flex flex-row justify-between p-4 bg-white border-b border-gray-200 shadow-sm">
         <Button type="link">
           <NavLink to="/dashboard">
@@ -49,7 +51,7 @@ export default function Session() {
           <Button onClick={handleDecreaseWeek} shape="circle">
             <LeftOutlined />
           </Button>
-          <P>{formatWeekLabel(weekStart)}</P>
+          <P>{weekStart.toString()}</P>
           <Button onClick={handleIncreaseWeek} shape="circle">
             <RightOutlined />
           </Button>
@@ -58,11 +60,12 @@ export default function Session() {
           Log out
         </Button>
       </nav>
+
       <div className="flex-1 w-full flex flex-col overflow-auto [scrollbar-gutter:stable]">
         <div className="flex-1 flex w-max flex-col p-4">
           <div className="flex flex-1 border-gray-200 border-l">
             {sessions.map((session) => (
-              <SessionColumn session={session} />
+              <SessionColumn key={session.ssid} session={session} />
             ))}
           </div>
         </div>

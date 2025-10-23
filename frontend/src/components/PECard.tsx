@@ -1,6 +1,7 @@
 import { Button, Card, Input } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import type { PerformedExerciseResponseDto } from "../domain/PerformedExercise/PerformedExercise";
+import { useDeletePE } from "../services/performedExerciseService";
 
 function cardTitle(peName: string) {
   return (
@@ -13,11 +14,15 @@ function cardTitle(peName: string) {
   );
 }
 
-type ExerciseCardProps = {
+type PECardProps = {
   pe: PerformedExerciseResponseDto;
 };
 
-export default function ExerciseCard({ pe }: ExerciseCardProps) {
+export default function PECard({ pe }: PECardProps) {
+  const { mutate, isPending } = useDeletePE(pe.peid);
+
+  const handleDelete: React.MouseEventHandler<HTMLElement> = () => mutate();
+
   return (
     <Card
       variant="borderless"
@@ -33,6 +38,8 @@ export default function ExerciseCard({ pe }: ExerciseCardProps) {
           variant="outlined"
           size="small"
           icon={<CloseOutlined />}
+          onClick={handleDelete}
+          loading={isPending}
         ></Button>
       </div>
     </Card>

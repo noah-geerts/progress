@@ -2,19 +2,14 @@ import { DatePicker, Input, Modal, Spin, type DatePickerProps } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { dateToYYYYMMDD } from "../misc/dateHelpers";
 import { useCreateSession, useGetSession } from "../services/sessionService";
 
 type AddSessionModalProps = {
-  open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function AddSessionModal({
-  open,
-  setOpen,
-}: AddSessionModalProps) {
-  const [localDate, setLocalDate] = useState(dateToYYYYMMDD(new Date()));
+export default function AddSessionModal({ setOpen }: AddSessionModalProps) {
+  const [localDate, setLocalDate] = useState("2025-10-22");
   const [name, setName] = useState("");
 
   const { data, isLoading: isGetLoading } = useGetSession(localDate);
@@ -45,7 +40,7 @@ export default function AddSessionModal({
   return (
     <Modal
       title="Add Session"
-      open={open}
+      open={true}
       onOk={handleOk}
       onCancel={() => setOpen(false)}
       confirmLoading={isGetLoading}
@@ -62,7 +57,7 @@ export default function AddSessionModal({
               placeholder="Enter session name"
             ></Input>
             <DatePicker
-              defaultValue={[dayjs(new Date())]}
+              defaultValue={[dayjs()]}
               onChange={handleChangeDate}
             ></DatePicker>
             {data !== undefined ? (

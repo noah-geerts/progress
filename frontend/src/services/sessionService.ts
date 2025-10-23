@@ -1,21 +1,35 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "../wrappers/ApiProvider";
-import { dateToYYYYMMDD } from "../misc/dateHelpers";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import type { SessionResponseDto } from "../domain/Session/Session";
 import type { SessionRequestDto } from "../domain/Session/SessionRequestDto";
+import type { Dayjs } from "dayjs";
 
 export const useGetSession = (localDate: string) => {
   // Use auth and api contexts
   const { user } = useAuth0();
   const api = useApi();
+  const queryClient = useQueryClient();
 
   // Define query function using axios instance
-  const getSession = () =>
-    api
-      .get<SessionResponseDto>("sessions/" + localDate)
-      .then((response) => response.data);
+  const getSession = async (): Promise<SessionResponseDto> => {
+    try {
+      const response = await api.get<SessionResponseDto>(
+        "sessions/" + localDate
+      );
+      return response.data;
+    } catch (error) {
+      // Set data to undefined on 404 because that means it doesn't exist
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        queryClient.setQueryData(
+          ["sessions", user?.sub, "2025-10-15"],
+          undefined
+        );
+      }
+      throw error as AxiosError;
+    }
+  };
 
   // Return tanstack query hook
   return useQuery<SessionResponseDto, AxiosError>({
@@ -99,16 +113,13 @@ export const useDeleteSession = (localDate: string) => {
 
 // Temporary function because there is no getWeeklySessions backend endpoint
 // Ideally this would return a tanstack query hook and not the data itself
-export const useGetWeeklySessions = (weekStart: Date) => {
+export const useGetWeeklySessions = (weekStart: Dayjs) => {
   const sessions = [];
-  const start = new Date(weekStart);
   for (let i = 0; i <= 6; i++) {
-    const weekDay = new Date(start);
-    weekDay.setDate(weekDay.getDate() + i);
-    const localDate = dateToYYYYMMDD(weekDay);
+    const day = weekStart.add(i, "day"); // i days after the start of the week
+    const localDate = day.format("YYYY-MM-DD");
     const { data } = useGetSession(localDate);
     if (data) sessions.push(data);
   }
-  console.log(sessions);
   return sessions;
 };
