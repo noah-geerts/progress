@@ -4,8 +4,7 @@
 
 1. Ensure you have node and npm installed
 2. Run `npm install`
-3. Run `npx tailwindcss -i ./src/input.css -o ./src/index.css --watch` to automatically regenerate the necessary tailwind css classes while developing
-4. Run `npm run dev` to spin up the vite development server
+3. Run `npm run dev` to spin up the vite development server
 
 ## Environment Variables
 

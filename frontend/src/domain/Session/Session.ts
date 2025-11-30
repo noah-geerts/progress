@@ -1,8 +1,8 @@
-import type { PerformedExerciseResponseDto } from "../PerformedExercise/PerformedExercise";
+import type { PerformedExercise } from "../PerformedExercise/PerformedExercise";
 
-export interface SessionResponseDto {
+export interface Session {
   ssid: number;
   date: string; // LocalDate in Java becomes string in TypeScript
   name: string;
-  performedExercises: PerformedExerciseResponseDto[];
+  performedExercises: PerformedExercise[];
 }

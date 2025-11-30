@@ -1,4 +1,4 @@
-export interface SetResponseDto {
+export interface PerformedSet {
   stid: number;
   position: number;
   reps: number;

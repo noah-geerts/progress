@@ -1,9 +1,9 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Layout, Spin } from "antd";
-import { Navigate, Outlet } from "react-router";
+import { Outlet } from "react-router";
 
-export default function AuthGuard() {
-  const { isAuthenticated, isLoading } = useAuth0();
+export default function AuthLoading() {
+  const { isLoading } = useAuth0();
   if (isLoading)
     return (
       <Layout>
@@ -19,6 +19,5 @@ export default function AuthGuard() {
         </div>
       </Layout>
     );
-  if (isAuthenticated) return <Outlet />;
-  return <Navigate to="/" />;
+  return <Outlet />;
 }
