@@ -4,7 +4,6 @@ import { useApi } from "../wrappers/ApiProvider";
 import axios, { AxiosError } from "axios";
 import type { Session } from "../domain/Session/Session";
 import type { SessionRequestDto } from "../domain/Session/SessionRequestDto";
-import type { Dayjs } from "dayjs";
 
 export const useGetSession = (localDate: string) => {
   // Use auth and api contexts
@@ -107,17 +106,4 @@ export const useDeleteSession = (localDate: string) => {
       });
     },
   });
-};
-
-// Temporary function because there is no getWeeklySessions backend endpoint
-// Ideally this would return a tanstack query hook and not the data itself
-export const useGetWeeklySessions = (weekStart: Dayjs) => {
-  const sessions = [];
-  for (let i = 0; i <= 6; i++) {
-    const day = weekStart.add(i, "day"); // i days after the start of the week
-    const localDate = day.format("YYYY-MM-DD");
-    const { data } = useGetSession(localDate);
-    if (data) sessions.push(data);
-  }
-  return sessions;
 };

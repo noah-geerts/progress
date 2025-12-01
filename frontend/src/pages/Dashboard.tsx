@@ -1,103 +1,56 @@
-import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Col, Flex, Input, theme, Typography } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { Button, Flex, theme, Typography } from "antd";
 import InnerPage from "../wrappers/InnerPage";
 import { generateCurrentWeekSessions } from "./sampleSessions";
 import { useState } from "react";
-import SetInput from "../components/SetInput";
-import PECard from "../components/PECard";
-import CreateExercise from "../components/CreateExercise";
-const { Title } = Typography;
+import dayjs from "dayjs";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+import SessionColumn, { useSession } from "../components/SessionColumn";
+import { formatDateString, getDaysOfWeek } from "../common/dateHelpers";
+
+dayjs.extend(weekOfYear);
 
 export default function Dashboard() {
-  const {
-    token: {
-      colorBgContainer,
-      borderRadiusLG,
-      fontWeightStrong,
-      colorBgLayout,
-      padding,
-      paddingSM,
-    },
-  } = theme.useToken();
+  const { token } = theme.useToken();
 
-  const [sessions, setSessions] = useState(generateCurrentWeekSessions());
+  const [firstDayOfWeek, setFirstDayOfWeek] = useState(dayjs().day(0));
+  const daysOfWeek = getDaysOfWeek(firstDayOfWeek);
 
   return (
     <InnerPage>
-      <div
-        style={{
-          height: "100%",
-        }}
-      >
-        <Flex gap={16} style={{ height: "100%" }}>
-          <Col
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              background: colorBgLayout,
-              borderRadius: borderRadiusLG,
-              gap: 8,
-              padding: paddingSM,
-            }}
-            span={4}
-          >
-            {/* Title  */}
-            <div
+      <Flex vertical style={{ height: "100%" }}>
+        {/** Week Controls */}
+        <Flex gap={24} style={{ marginBottom: token.paddingLG }}>
+          <Button onClick={() => setFirstDayOfWeek(dayjs().day(0))}>
+            Go to this week
+          </Button>
+          <Flex align="center" gap={8}>
+            <Button onClick={() => setFirstDayOfWeek(firstDayOfWeek.day(-7))}>
+              <LeftOutlined />
+            </Button>
+            <p
               style={{
-                background: colorBgContainer,
-                borderRadius: borderRadiusLG,
-                padding: padding,
+                margin: 0,
+                padding: 0,
+                fontSize: token.fontSizeHeading4,
+                fontWeight: token.fontWeightStrong,
               }}
             >
-              <p
-                style={{
-                  fontWeight: fontWeightStrong,
-                  textAlign: "center",
-                }}
-              >
-                Monday, October 19th - Chest and Back
-              </p>
-            </div>
-
-            {/* Performed Exercises */}
-            {sessions[0].performedExercises.map((pe) => (
-              <PECard pe={pe} />
-            ))}
-
-            {/* Create Exercise Component */}
-            <CreateExercise />
-          </Col>
-          <Col
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              background: colorBgLayout,
-              borderRadius: borderRadiusLG,
-              gap: 8,
-              padding: paddingSM,
-            }}
-            span={2}
-          >
-            {/* Title  */}
-            <div
-              style={{
-                background: colorBgContainer,
-                borderRadius: borderRadiusLG,
-                padding: padding,
-              }}
-            >
-              <p
-                style={{
-                  fontWeight: fontWeightStrong,
-                  textAlign: "center",
-                }}
-              >
-                Tuesday, October 20th - Rest
-              </p>
-            </div>
-          </Col>
+              {"Week of " + formatDateString(firstDayOfWeek.format())}
+            </p>
+            <Button onClick={() => setFirstDayOfWeek(firstDayOfWeek.day(7))}>
+              <RightOutlined />
+            </Button>
+          </Flex>
         </Flex>
-      </div>
+
+        {/** Sessions */}
+        <Flex gap={16} style={{ flex: 1, overflow: "scroll" }}>
+          {daysOfWeek.map((date) => (
+            <SessionColumn date={date} />
+          ))}
+        </Flex>
+      </Flex>
     </InnerPage>
   );
 }

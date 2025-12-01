@@ -53,7 +53,12 @@ export default function InnerPage({ children }: { children: React.ReactNode }) {
           Log out
         </Button>
       </Header>
-      <Content style={{ background: colorBgContainer, padding: paddingLG }}>
+      <Content
+        style={{
+          background: colorBgContainer,
+          padding: paddingLG,
+        }}
+      >
         {children}
       </Content>
     </Layout>

@@ -8,4 +8,17 @@
 - I am even using `["sessions", user?.sub]` as the query key for my exercises, which makes no sense semantically but allows me to invalidate EVERYTHING by just invalidating the query key `["sessions", user?.sub]`
 
 - Also note that some errors from the backend (404, 409, 422), have meaning and should not trigger refetches. For this I include `retry: (failureCount, error) =>
-  ![404].includes(error.response?.status ?? 0)` in my useQuery, and then I can use the error and isError states from the useQuery and useMutation hooks to handle these cases in the UI
+![404].includes(error.response?.status ?? 0)` in my useQuery, and then I can use the error and isError states from the useQuery and useMutation hooks to handle these cases in the UI
+
+## Caching effectively with Tanstack Query
+
+- If I key my queries by session id, then:
+
+- If I load all sessions for a given week into a state variable in Dashboard and then render the SessionColumns FROM this array, then I need to change this state variable every time any of the 7 potential sessions for that week changes, causing the entire page to rerender (all sessions)
+
+- If instead I pass just a date to the SessionColumns, then they can handle data fetching themselves and store a single session in state, so when I modify that session, only IT needs to be refetched by Tanstack Query, and only that ONE SessionColumn rerenders
+
+Let's do it this way:
+
+- First, I'll write the code such that each SessionColumn renders based on a date and fetches its own session
+- And then later I can add a weekly sessions endpoint to fetch all existing sessions for a week and then use that to populate the individual sessions' caches in tanstack query.
