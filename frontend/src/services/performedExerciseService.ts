@@ -2,7 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "../wrappers/ApiProvider";
 import { AxiosError } from "axios";
-import type { PerformedExerciseResponseDto } from "../domain/PerformedExercise/PerformedExercise";
+import type { PerformedExercise } from "../domain/PerformedExercise/PerformedExercise";
 import type { CreatePerformedExerciseDto } from "../domain/PerformedExercise/CreatePerformedExerciseDto";
 import type { UpdatePerformedExerciseDto } from "../domain/PerformedExercise/UpdatePerformedExerciseDto";
 
@@ -15,22 +15,20 @@ export const useCreatePE = () => {
   // Define mutation function
   const createPE = (body: CreatePerformedExerciseDto) =>
     api
-      .post<PerformedExerciseResponseDto>("performed-exercises", body)
+      .post<PerformedExercise>("performed-exercises", body)
       .then((response) => response.data);
 
   // Return useMutation hook
-  return useMutation<
-    PerformedExerciseResponseDto,
-    AxiosError,
-    CreatePerformedExerciseDto
-  >({
-    mutationFn: createPE,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
-      });
-    },
-  });
+  return useMutation<PerformedExercise, AxiosError, CreatePerformedExerciseDto>(
+    {
+      mutationFn: createPE,
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["sessions", user?.sub],
+        });
+      },
+    }
+  );
 };
 
 export const useUpdatePE = (peid: number) => {
@@ -42,22 +40,20 @@ export const useUpdatePE = (peid: number) => {
   // Define mutation function
   const updatePE = (body: UpdatePerformedExerciseDto) =>
     api
-      .patch<PerformedExerciseResponseDto>("performed-exercises/" + peid, body)
+      .patch<PerformedExercise>("performed-exercises/" + peid, body)
       .then((response) => response.data);
 
   // Return useMutation hook
-  return useMutation<
-    PerformedExerciseResponseDto,
-    AxiosError,
-    UpdatePerformedExerciseDto
-  >({
-    mutationFn: updatePE,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
-      });
-    },
-  });
+  return useMutation<PerformedExercise, AxiosError, UpdatePerformedExerciseDto>(
+    {
+      mutationFn: updatePE,
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["sessions", user?.sub],
+        });
+      },
+    }
+  );
 };
 
 export const useDeletePE = (peid: number) => {

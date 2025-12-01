@@ -3,6 +3,9 @@ import { Button, Col, Flex, Input, theme, Typography } from "antd";
 import InnerPage from "../wrappers/InnerPage";
 import { generateCurrentWeekSessions } from "./sampleSessions";
 import { useState } from "react";
+import SetInput from "../components/SetInput";
+import PECard from "../components/PECard";
+import CreateExercise from "../components/CreateExercise";
 const { Title } = Typography;
 
 export default function Dashboard() {
@@ -13,10 +16,11 @@ export default function Dashboard() {
       fontWeightStrong,
       colorBgLayout,
       padding,
+      paddingSM,
     },
   } = theme.useToken();
 
-  const [sessions, useSessions] = useState(generateCurrentWeekSessions());
+  const [sessions, setSessions] = useState(generateCurrentWeekSessions());
 
   return (
     <InnerPage>
@@ -33,86 +37,35 @@ export default function Dashboard() {
               background: colorBgLayout,
               borderRadius: borderRadiusLG,
               gap: 8,
-              padding: 8,
+              padding: paddingSM,
             }}
             span={4}
           >
+            {/* Title  */}
             <div
               style={{
                 background: colorBgContainer,
                 borderRadius: borderRadiusLG,
+                padding: padding,
               }}
             >
               <p
                 style={{
                   fontWeight: fontWeightStrong,
-                  marginBottom: "16px",
                   textAlign: "center",
-                  marginTop: 16,
                 }}
               >
                 Monday, October 19th - Chest and Back
               </p>
             </div>
 
-            <Flex
-              style={{
-                background: colorBgContainer,
-                borderRadius: borderRadiusLG,
-                padding: padding,
-              }}
-              gap={8}
-              vertical
-            >
-              <Title level={5}>Bench Press</Title>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-              </Flex>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-              </Flex>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-                <Button variant="text" color="danger">
-                  <DeleteOutlined />
-                </Button>
-              </Flex>
-              <Button variant="text" color="primary">
-                Add Set
-              </Button>
-            </Flex>
-            <Flex
-              style={{
-                background: colorBgContainer,
-                borderRadius: borderRadiusLG,
-                padding: padding,
-              }}
-              gap={8}
-              vertical
-            >
-              <Title level={5}>Bench Press</Title>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-              </Flex>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-              </Flex>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-                <Button variant="text" color="danger">
-                  <DeleteOutlined />
-                </Button>
-              </Flex>
-              <Button variant="text" color="primary">
-                Add Set
-              </Button>
-            </Flex>
+            {/* Performed Exercises */}
+            {sessions[0].performedExercises.map((pe) => (
+              <PECard pe={pe} />
+            ))}
+
+            {/* Create Exercise Component */}
+            <CreateExercise />
           </Col>
           <Col
             style={{
@@ -121,86 +74,27 @@ export default function Dashboard() {
               background: colorBgLayout,
               borderRadius: borderRadiusLG,
               gap: 8,
-              padding: 8,
+              padding: paddingSM,
             }}
-            span={4}
+            span={2}
           >
+            {/* Title  */}
             <div
               style={{
                 background: colorBgContainer,
                 borderRadius: borderRadiusLG,
+                padding: padding,
               }}
             >
               <p
                 style={{
                   fontWeight: fontWeightStrong,
-                  marginBottom: "16px",
                   textAlign: "center",
-                  marginTop: 16,
                 }}
               >
-                Monday, October 19th - Chest and Back
+                Tuesday, October 20th - Rest
               </p>
             </div>
-
-            <Flex
-              style={{
-                background: colorBgContainer,
-                borderRadius: borderRadiusLG,
-                padding: padding,
-              }}
-              gap={8}
-              vertical
-            >
-              <Title level={5}>Bench Press</Title>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-              </Flex>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-              </Flex>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-                <Button variant="text" color="danger">
-                  <DeleteOutlined />
-                </Button>
-              </Flex>
-              <Button variant="text" color="primary">
-                Add Set
-              </Button>
-            </Flex>
-            <Flex
-              style={{
-                background: colorBgContainer,
-                borderRadius: borderRadiusLG,
-                padding: padding,
-              }}
-              gap={8}
-              vertical
-            >
-              <Title level={5}>Bench Press</Title>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-              </Flex>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-              </Flex>
-              <Flex gap={8}>
-                <Input variant="filled" suffix="lbs"></Input>
-                <Input variant="filled" suffix="reps"></Input>
-                <Button variant="text" color="danger">
-                  <DeleteOutlined />
-                </Button>
-              </Flex>
-              <Button variant="text" color="primary">
-                Add Set
-              </Button>
-            </Flex>
           </Col>
         </Flex>
       </div>

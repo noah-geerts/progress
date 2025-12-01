@@ -2,7 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "../wrappers/ApiProvider";
 import { AxiosError } from "axios";
-import type { ExerciseResponseDto } from "../domain/Exercise/Exercise";
+import type { Exercise } from "../domain/Exercise/Exercise";
 import type { ExerciseRequestDto } from "../domain/Exercise/ExerciseRequestDto";
 
 export const useGetAllExercises = () => {
@@ -12,12 +12,10 @@ export const useGetAllExercises = () => {
 
   // Define query function
   const getAllExercises = () =>
-    api
-      .get<ExerciseResponseDto[]>("exercises")
-      .then((response) => response.data);
+    api.get<Exercise[]>("exercises").then((response) => response.data);
 
   // Return useQuery hook
-  return useQuery<ExerciseResponseDto[], AxiosError>({
+  return useQuery<Exercise[], AxiosError>({
     queryKey: ["sessions", user?.sub],
     queryFn: getAllExercises,
   });
@@ -31,12 +29,10 @@ export const useCreateExercise = () => {
 
   // Define mutation function
   const createExercise = (body: ExerciseRequestDto) =>
-    api
-      .post<ExerciseResponseDto>("exercises", body)
-      .then((response) => response.data);
+    api.post<Exercise>("exercises", body).then((response) => response.data);
 
   // Return useMutation hook
-  return useMutation<ExerciseResponseDto, AxiosError, ExerciseRequestDto>({
+  return useMutation<Exercise, AxiosError, ExerciseRequestDto>({
     mutationFn: createExercise,
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -55,11 +51,11 @@ export const useUpdateExercise = (eid: number) => {
   // Define mutation function
   const updateExercise = (body: ExerciseRequestDto) =>
     api
-      .patch<ExerciseResponseDto>("exercises/" + eid, body)
+      .patch<Exercise>("exercises/" + eid, body)
       .then((response) => response.data);
 
   // Return useMutation hook
-  return useMutation<ExerciseResponseDto, AxiosError, ExerciseRequestDto>({
+  return useMutation<Exercise, AxiosError, ExerciseRequestDto>({
     mutationFn: updateExercise,
     onSuccess: () => {
       queryClient.invalidateQueries({

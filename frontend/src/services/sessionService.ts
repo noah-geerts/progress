@@ -2,7 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "../wrappers/ApiProvider";
 import axios, { AxiosError } from "axios";
-import type { SessionResponseDto } from "../domain/Session/Session";
+import type { Session } from "../domain/Session/Session";
 import type { SessionRequestDto } from "../domain/Session/SessionRequestDto";
 import type { Dayjs } from "dayjs";
 
@@ -13,11 +13,9 @@ export const useGetSession = (localDate: string) => {
   const queryClient = useQueryClient();
 
   // Define query function using axios instance
-  const getSession = async (): Promise<SessionResponseDto> => {
+  const getSession = async (): Promise<Session> => {
     try {
-      const response = await api.get<SessionResponseDto>(
-        "sessions/" + localDate
-      );
+      const response = await api.get<Session>("sessions/" + localDate);
       return response.data;
     } catch (error) {
       // Set data to undefined on 404 because that means it doesn't exist
@@ -32,7 +30,7 @@ export const useGetSession = (localDate: string) => {
   };
 
   // Return tanstack query hook
-  return useQuery<SessionResponseDto, AxiosError>({
+  return useQuery<Session, AxiosError>({
     queryKey: ["sessions", user?.sub, localDate],
     queryFn: getSession,
     retry: (failureCount, error) =>
@@ -53,11 +51,11 @@ export const useCreateSession = (localDate: string) => {
     body: SessionRequestDto // mutationFn parameters are expected in mutate and mutateAsync and are passed to the mutationFn
   ) =>
     api
-      .post<SessionResponseDto>("sessions/" + localDate, body)
+      .post<Session>("sessions/" + localDate, body)
       .then((response) => response.data); // must return a promise that resolves to data
 
   // Return tanstack mutation hook
-  return useMutation<SessionResponseDto, AxiosError, SessionRequestDto>({
+  return useMutation<Session, AxiosError, SessionRequestDto>({
     mutationFn: createSession,
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -76,11 +74,11 @@ export const useUpdateSession = (localDate: string) => {
   // Define mutation function
   const updateSession = (body: SessionRequestDto) =>
     api
-      .patch<SessionResponseDto>("sessions/" + localDate, body)
+      .patch<Session>("sessions/" + localDate, body)
       .then((response) => response.data);
 
   // Return tanstack mutation hook
-  return useMutation<SessionResponseDto, AxiosError, SessionRequestDto>({
+  return useMutation<Session, AxiosError, SessionRequestDto>({
     mutationFn: updateSession,
     onSuccess: () => {
       queryClient.invalidateQueries({

@@ -13,6 +13,7 @@ import AuthLoading from "./wrappers/AuthLoading";
 import AuthGuard from "./wrappers/AuthGuard";
 import Dashboard from "./pages/Dashboard";
 import DashboardEditDemo from "./pages/Dashboard_EditDemo";
+import ProgressNotificationProvider from "./wrappers/ProgressNotificationProvider";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "dashboard",
-        element: <DashboardEditDemo />,
+        element: <Dashboard />,
       },
     ],
   },
@@ -68,7 +69,9 @@ function App() {
                     }
               }
             >
-              <RouterProvider router={router} />
+              <ProgressNotificationProvider>
+                <RouterProvider router={router} />
+              </ProgressNotificationProvider>
             </ConfigProvider>
           </QueryClientProvider>
         </ApiProvider>

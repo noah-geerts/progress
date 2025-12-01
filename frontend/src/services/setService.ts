@@ -2,7 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "../wrappers/ApiProvider";
 import { AxiosError } from "axios";
-import type { SetResponseDto } from "../domain/PerformedSet/PerformedSet";
+import type { PerformedSet } from "../domain/PerformedSet/PerformedSet";
 import type { CreateSetDto } from "../domain/PerformedSet/CreatePerformedSetDto";
 import type { UpdateSetDto } from "../domain/PerformedSet/UpdatePerformedSetDto";
 
@@ -14,10 +14,10 @@ export const useCreateSet = () => {
 
   // Define query function using axios instance
   const createSet = (body: CreateSetDto) =>
-    api.post<SetResponseDto>("sets", body).then((response) => response.data);
+    api.post<PerformedSet>("sets", body).then((response) => response.data);
 
   // Return tanstack query hook
-  return useMutation<SetResponseDto, AxiosError, CreateSetDto>({
+  return useMutation<PerformedSet, AxiosError, CreateSetDto>({
     mutationFn: createSet,
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -36,11 +36,11 @@ export const useUpdateSet = (stid: number) => {
   // Define query function using axios instance
   const updateSet = (body: UpdateSetDto) =>
     api
-      .patch<SetResponseDto>("sets/" + stid, body)
+      .patch<PerformedSet>("sets/" + stid, body)
       .then((response) => response.data);
 
   // Return tanstack query hook
-  return useMutation<SetResponseDto, AxiosError, UpdateSetDto>({
+  return useMutation<PerformedSet, AxiosError, UpdateSetDto>({
     mutationFn: updateSet,
     onSuccess: () => {
       queryClient.invalidateQueries({

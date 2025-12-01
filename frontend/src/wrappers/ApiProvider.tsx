@@ -7,9 +7,7 @@ const ApiContext = createContext<AxiosInstance | null>(null);
 export function useApi(): AxiosInstance {
   const api = useContext(ApiContext);
   if (api === null) {
-    throw new Error(
-      "Axios Instance was not successfully provided to ApiProvider"
-    );
+    throw new Error("useApi called outside of ApiProvider");
   }
   return api;
 }
