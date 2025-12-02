@@ -6,27 +6,30 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 import { useProgressNotification } from "../wrappers/ProgressNotificationProvider";
+import { useCreateSet } from "../services/setService";
+import type { PerformedExercise } from "../domain/PerformedExercise/PerformedExercise";
 
 type CreateSetProps = {
   onComplete: () => void;
+  pe: PerformedExercise;
 };
 
-export default function CreateSet({ onComplete }: CreateSetProps) {
+export default function CreateSet({ onComplete, pe }: CreateSetProps) {
   const [lbs, setLbs] = useState("");
   const [reps, setReps] = useState("");
 
-  const [loading, setLoading] = useState(false);
-
   const api = useProgressNotification();
+
+  const { mutate: createSet, isPending } = useCreateSet();
 
   const handleCancel = () => {
     onComplete();
   };
 
-  const handleSave = () => {
+  const handleCreate = () => {
     // Ensure lbs input is valid. Reset fields if not.
     const lbsNum = Number(lbs);
-    if (isNaN(lbsNum)) {
+    if (lbs === "" || isNaN(lbsNum)) {
       api.error({
         message: "Weight must be a valid decimal number to create new set",
       });
@@ -36,7 +39,7 @@ export default function CreateSet({ onComplete }: CreateSetProps) {
 
     // Ensure reps input is valid
     const repsNum = Number(reps);
-    if (isNaN(repsNum) || !Number.isInteger(repsNum)) {
+    if (reps === "" || isNaN(repsNum) || !Number.isInteger(repsNum)) {
       api.error({
         message: "Reps must be a valid whole number to create new set",
       });
@@ -45,16 +48,30 @@ export default function CreateSet({ onComplete }: CreateSetProps) {
     }
 
     // If both were valid, try to persist changes using the api
-    setLoading(true);
-    setTimeout(() => {
-      onComplete();
-    }, 800);
+    const nSets = pe.sets.length;
+    createSet(
+      {
+        position: nSets > 0 ? pe.sets[nSets - 1].position + 1 : 0,
+        reps: repsNum,
+        weight: lbsNum,
+        peid: pe.peid,
+      },
+      {
+        onError: () => {
+          api.error({
+            message: "Network error occured while creating the set",
+          });
+          onComplete();
+        },
+        onSuccess: onComplete,
+      }
+    );
   };
 
   // Buttons following the input fields
   function Options() {
     // Display 1 button with a loading indicator when loading
-    if (loading)
+    if (isPending)
       return (
         <Button variant="filled" color="primary">
           <Spin size="small" indicator={<LoadingOutlined />} />
@@ -64,7 +81,7 @@ export default function CreateSet({ onComplete }: CreateSetProps) {
     // Display a save and cancel button when editing
     return (
       <>
-        <Button variant="filled" color="primary" onClick={handleSave}>
+        <Button variant="filled" color="primary" onClick={handleCreate}>
           <CheckOutlined />
         </Button>{" "}
         <Button variant="filled" color="danger" onClick={handleCancel}>
@@ -77,7 +94,7 @@ export default function CreateSet({ onComplete }: CreateSetProps) {
   return (
     <Flex gap={8}>
       <Input
-        disabled={loading}
+        disabled={isPending}
         variant="filled"
         color="primary"
         suffix="lbs"
@@ -85,7 +102,7 @@ export default function CreateSet({ onComplete }: CreateSetProps) {
         onChange={(e) => setLbs(e.target.value)}
       />
       <Input
-        disabled={loading}
+        disabled={isPending}
         variant="filled"
         color="primary"
         suffix="reps"

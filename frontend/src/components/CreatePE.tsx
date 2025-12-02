@@ -44,11 +44,13 @@ export default function CreateExercise() {
       api.error({ message: "Please select an exercise before confirming" });
       return;
     }
+    const nPEs = session.performedExercises.length;
     createPE(
       {
         eid: selectedEid,
         ssid: session.ssid,
-        position: session.performedExercises.length,
+        position:
+          nPEs > 0 ? session.performedExercises[nPEs - 1].position + 1 : 0,
       },
       {
         onError: () => {

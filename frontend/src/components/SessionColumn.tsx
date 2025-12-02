@@ -1,7 +1,7 @@
 import type { Session } from "../domain/Session/Session";
-import { Col, theme } from "antd";
+import { Col, Spin, theme } from "antd";
 import PECard from "../components/PECard";
-import CreateExercise from "./CreatePE";
+import CreatePE from "./CreatePE";
 import dayjs, { Dayjs } from "dayjs";
 import { formatDateString } from "../common/dateHelpers";
 import { useGetSession } from "../services/sessionService";
@@ -25,64 +25,21 @@ export function useSession() {
 export default function SessionColumn({ date }: SessionColumnProps) {
   const { token } = theme.useToken();
 
-  const { data: session } = useGetSession(date.format("YYYY-MM-DD"));
+  const { data: session, isLoading } = useGetSession(date.format("YYYY-MM-DD"));
 
   // If the session exists, render it
-  if (session)
-    return (
-      <SessionContext.Provider value={session}>
-        <Col
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            background: token.colorBgLayout,
-            borderRadius: token.borderRadiusLG,
-            gap: 8,
-            padding: token.paddingSM,
-          }}
-          span={4}
-        >
-          {/* Title  */}
-          <div
-            style={{
-              background: token.colorBgContainer,
-              borderRadius: token.borderRadiusLG,
-              padding: token.padding,
-            }}
-          >
-            <p
-              style={{
-                fontWeight: token.fontWeightStrong,
-                textAlign: "center",
-              }}
-            >
-              {formatDateString(date.format())} - {session.name}
-            </p>
-          </div>
-
-          {/* Performed Exercises */}
-          {session.performedExercises.map((pe) => (
-            <PECard pe={pe} />
-          ))}
-
-          {/* Create Exercise Component */}
-          <CreateExercise />
-        </Col>
-      </SessionContext.Provider>
-    );
-
-  // If it doesn't exist, render a rest day
   return (
     <Col
       style={{
         display: "flex",
         flexDirection: "column",
+        justifyContent: isLoading ? "space-between" : "flex-start",
         background: token.colorBgLayout,
         borderRadius: token.borderRadiusLG,
         gap: 8,
         padding: token.paddingSM,
       }}
-      span={2}
+      span={!isLoading && session ? 4 : 2}
     >
       {/* Title  */}
       <div
@@ -98,9 +55,29 @@ export default function SessionColumn({ date }: SessionColumnProps) {
             textAlign: "center",
           }}
         >
-          {formatDateString(date.format())} - Rest Day
+          {formatDateString(date.format())} -{" "}
+          {session ? session.name : isLoading ? "" : "Rest Day"}
         </p>
       </div>
+
+      {session && (
+        <SessionContext.Provider value={session}>
+          {/* Performed Exercises */}
+          {session.performedExercises.map((pe) => (
+            <PECard pe={pe} />
+          ))}
+
+          {/* Create Exercise Component */}
+          <CreatePE />
+        </SessionContext.Provider>
+      )}
+
+      {isLoading && (
+        <>
+          <Spin />
+          <div></div>
+        </>
+      )}
     </Col>
   );
 }

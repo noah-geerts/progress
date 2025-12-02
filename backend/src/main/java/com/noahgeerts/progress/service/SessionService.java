@@ -1,11 +1,14 @@
 package com.noahgeerts.progress.service;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.noahgeerts.progress.domain.PerformedExercise.PerformedExercise;
+import com.noahgeerts.progress.domain.PerformedSet.PerformedSet;
 import com.noahgeerts.progress.domain.Session.Session;
 import com.noahgeerts.progress.domain.Session.SessionRequestDto;
 import com.noahgeerts.progress.domain.Session.SessionResponseDto;
@@ -33,12 +36,25 @@ public class SessionService {
    */
   public SessionResponseDto getSession(String uid, LocalDate date) {
     // Check that session exists
-    Optional<Session> session = sessionRepo.findByDateAndUid(date, uid);
-    if (session.isEmpty())
+    Optional<Session> existing = sessionRepo.findByDateAndUid(date, uid);
+    if (existing.isEmpty())
       throw new ResourceNotFoundException("There is no session on the given date for this user");
 
+    // Sort the performed exercises and performed sets by position increasing
+    Session session = existing.get();
+    if (session.getPerformedExercises() != null) {
+      // Sort performed exercises by position
+      session.getPerformedExercises().sort(Comparator.comparingInt(PerformedExercise::getPosition));
+
+      // Sort sets within each performed exercise by position
+      session.getPerformedExercises().forEach(pe -> {
+        if (pe.getSets() != null)
+          pe.getSets().sort(Comparator.comparingInt(PerformedSet::getPosition));
+      });
+    }
+
     // Return the session
-    return mapper.map(session.get(), SessionResponseDto.class);
+    return mapper.map(session, SessionResponseDto.class);
   }
 
   /**

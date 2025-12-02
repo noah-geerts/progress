@@ -1,4 +1,5 @@
-import { Button, Flex, Input, notification, Spin } from "antd";
+import { Button, Flex, Input, Modal, notification, Spin } from "antd";
+import Text from "antd/es/typography/Text";
 import type { PerformedSet } from "../domain/PerformedSet/PerformedSet";
 import { useState } from "react";
 import {
@@ -8,20 +9,39 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 import { useProgressNotification } from "../wrappers/ProgressNotificationProvider";
+import { useDeleteSet, useUpdateSet } from "../services/setService";
 
 type SetInputProps = {
   set: PerformedSet;
 };
 
-type InputState = "loading" | "editing" | "default";
+type InputState = "editing" | "default";
 
 export default function SetInput({ set }: SetInputProps) {
   const [lbs, setLbs] = useState(set.weight.toString());
   const [reps, setReps] = useState(set.reps.toString());
 
+  const [modalOpen, setModalOpen] = useState(false);
   const [inputState, setInputState] = useState<InputState>("default");
 
   const api = useProgressNotification();
+
+  const { mutate: deleteSet, isPending: deleteSetPending } = useDeleteSet(
+    set.stid
+  );
+  const { mutate: updateSet, isPending: updateSetPending } = useUpdateSet(
+    set.stid
+  );
+
+  const handleDeleteSet = () => {
+    deleteSet(undefined, {
+      onError: () => {
+        api.error({ message: "Network error occured while deleting the set" });
+        setModalOpen(false);
+      },
+      onSuccess: () => setModalOpen(false),
+    });
+  };
 
   const handleSave = () => {
     // Ensure lbs input is valid. Reset fields if not.
@@ -49,7 +69,20 @@ export default function SetInput({ set }: SetInputProps) {
     }
 
     // If both were valid, try to persist changes using the api
-    setInputState("default");
+    updateSet(
+      { weight: lbsNum, reps: repsNum },
+      {
+        onError: () => {
+          api.error({
+            message: "Network error occured while saving changes to the set",
+          });
+          setLbs(set.weight.toString());
+          setReps(set.reps.toString());
+          setInputState("default");
+        },
+        onSuccess: () => setInputState("default"),
+      }
+    );
   };
 
   // Buttons following the input fields
@@ -66,8 +99,8 @@ export default function SetInput({ set }: SetInputProps) {
         </Button>
       );
 
-    // Display 1 button with a loading indicator when loading
-    if (inputState === "loading")
+    // Display 1 button with a loading indicator when updates are pending
+    if (updateSetPending)
       return (
         <Button variant="filled" color="primary">
           <Spin size="small" indicator={<LoadingOutlined />} />
@@ -82,7 +115,7 @@ export default function SetInput({ set }: SetInputProps) {
         </Button>{" "}
         <Button
           variant="filled"
-          color="danger"
+          color="default"
           onClick={() => setInputState("default")}
         >
           <CloseOutlined />
@@ -93,6 +126,37 @@ export default function SetInput({ set }: SetInputProps) {
 
   return (
     <Flex gap={8}>
+      {/** Deletion modal */}
+      <Modal
+        title="Warning"
+        closable
+        okType="danger"
+        okText="Yes"
+        cancelText="No"
+        open={modalOpen}
+        onOk={handleDeleteSet}
+        okButtonProps={{ loading: deleteSetPending }}
+        onCancel={() => setModalOpen(false)}
+      >
+        <Text>
+          {"Are you sure you want to delete the set " +
+            set.weight +
+            "lbs for " +
+            set.reps +
+            " reps?"}
+        </Text>
+      </Modal>
+
+      {/** Delete button and inputs */}
+      {inputState === "default" && (
+        <Button
+          variant="filled"
+          color="danger"
+          onClick={() => setModalOpen(true)}
+        >
+          <CloseOutlined />
+        </Button>
+      )}
       <Input
         disabled={inputState !== "editing"}
         variant="filled"
@@ -109,6 +173,8 @@ export default function SetInput({ set }: SetInputProps) {
         value={reps}
         onChange={(e) => setReps(e.target.value)}
       />
+
+      {/** Post input buttons */}
       <Options />
     </Flex>
   );
