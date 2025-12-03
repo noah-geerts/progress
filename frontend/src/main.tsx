@@ -12,8 +12,8 @@ import { ConfigProvider, theme } from "antd";
 import AuthLoading from "./wrappers/AuthLoading";
 import AuthGuard from "./wrappers/AuthGuard";
 import Dashboard from "./pages/Dashboard";
-import DashboardEditDemo from "./pages/Dashboard_EditDemo";
 import ProgressNotificationProvider from "./wrappers/ProgressNotificationProvider";
+import Exercises from "./pages/Exercises";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <Dashboard />,
+      },
+      {
+        path: "exercises",
+        element: <Exercises />,
       },
     ],
   },

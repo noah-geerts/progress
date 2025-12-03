@@ -1,7 +1,6 @@
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Button, Flex, theme, Typography } from "antd";
 import InnerPage from "../wrappers/InnerPage";
-import { generateCurrentWeekSessions } from "./sampleSessions";
 import { useState } from "react";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";

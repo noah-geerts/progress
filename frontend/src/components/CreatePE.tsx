@@ -1,6 +1,6 @@
 import { LoadingOutlined } from "@ant-design/icons";
 import { Button, Flex, Select, Spin, theme } from "antd";
-import { useEffect, useState } from "react";
+import { createRef, useEffect, useState } from "react";
 import {
   useCreateExercise,
   useGetAllExercises,
@@ -8,6 +8,7 @@ import {
 import { useSession } from "./SessionColumn";
 import { useCreatePE } from "../services/performedExerciseService";
 import { useProgressNotification } from "../wrappers/ProgressNotificationProvider";
+import CreateExerciseModal from "./CreateExerciseModal";
 
 type State = "creating" | "default";
 
@@ -16,8 +17,9 @@ type Option = {
   label: string;
 };
 
-export default function CreateExercise() {
+export default function CreatePE() {
   const { token } = theme.useToken();
+  const [createExerciseOpen, setCreateExerciseOpen] = useState(false);
 
   // Notification api
   const api = useProgressNotification();
@@ -85,7 +87,8 @@ export default function CreateExercise() {
         </Button>
       </Flex>
     );
-  // If we're creating an exercise, show the exercise drop down and a confirm button
+
+  // If we're creating a PE, show the exercise drop down and a confirm button
   return (
     <Flex
       gap={8}
@@ -96,9 +99,27 @@ export default function CreateExercise() {
         padding: token.padding,
       }}
     >
+      {/** Create Exercise modal */}
+      {createExerciseOpen && (
+        <CreateExerciseModal
+          open={createExerciseOpen}
+          setOpen={setCreateExerciseOpen}
+        />
+      )}
+
+      {/** Create PE dropdown and confirm button */}
       <Select
         options={dropdownOptions}
-        placeholder="Select an exercise"
+        placeholder="Search for an exercise"
+        showSearch
+        filterOption={(input, option) =>
+          (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+        }
+        notFoundContent={
+          <Button type="link" onClick={() => setCreateExerciseOpen(true)}>
+            + Create new exercise
+          </Button>
+        }
         value={selectedEid}
         onChange={(eid: number) => {
           setSelectedEid(eid);
