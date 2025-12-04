@@ -85,7 +85,7 @@ export default function PECard({ pe }: ExerciseCardProps) {
 
       {/** Set inputs and create new set input*/}
       {pe.sets.map((set) => (
-        <SetInput set={set} />
+        <SetInput set={set} key={set.stid} />
       ))}
       {creatingSet && (
         <CreateSet onComplete={() => setCreatingSet(false)} pe={pe} />

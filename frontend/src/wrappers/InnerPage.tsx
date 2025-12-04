@@ -5,7 +5,6 @@ import { NavLink, useLocation } from "react-router";
 const navItems = [
   { key: "/dashboard", label: <NavLink to="/dashboard">Dashboard</NavLink> },
   { key: "/exercises", label: <NavLink to="/exercises">Exercises</NavLink> },
-  { key: "/calendar", label: <NavLink to="/calendar">Calendar</NavLink> },
 ];
 
 export default function InnerPage({ children }: { children: React.ReactNode }) {

@@ -1,10 +1,10 @@
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { Button, Flex, theme, Typography } from "antd";
+import { Button, Flex, theme } from "antd";
 import InnerPage from "../wrappers/InnerPage";
 import { useState } from "react";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
-import SessionColumn, { useSession } from "../components/SessionColumn";
+import SessionColumn from "../components/SessionColumn";
 import { formatDateString, getDaysOfWeek } from "../common/dateHelpers";
 
 dayjs.extend(weekOfYear);
@@ -20,11 +20,18 @@ export default function Dashboard() {
       <Flex vertical style={{ height: "100%" }}>
         {/** Week Controls */}
         <Flex gap={24} style={{ marginBottom: token.paddingLG }}>
-          <Button onClick={() => setFirstDayOfWeek(dayjs().day(0))}>
+          <Button
+            color="primary"
+            onClick={() => setFirstDayOfWeek(dayjs().day(0))}
+          >
             Go to this week
           </Button>
           <Flex align="center" gap={8}>
-            <Button onClick={() => setFirstDayOfWeek(firstDayOfWeek.day(-7))}>
+            <Button
+              variant="text"
+              color="primary"
+              onClick={() => setFirstDayOfWeek(firstDayOfWeek.day(-7))}
+            >
               <LeftOutlined />
             </Button>
             <p
@@ -37,7 +44,11 @@ export default function Dashboard() {
             >
               {"Week of " + formatDateString(firstDayOfWeek.format())}
             </p>
-            <Button onClick={() => setFirstDayOfWeek(firstDayOfWeek.day(7))}>
+            <Button
+              variant="text"
+              color="primary"
+              onClick={() => setFirstDayOfWeek(firstDayOfWeek.day(7))}
+            >
               <RightOutlined />
             </Button>
           </Flex>
@@ -46,7 +57,7 @@ export default function Dashboard() {
         {/** Sessions */}
         <Flex gap={16} style={{ flex: 1, overflow: "scroll" }}>
           {daysOfWeek.map((date) => (
-            <SessionColumn date={date} />
+            <SessionColumn date={date} key={date.format()} />
           ))}
         </Flex>
       </Flex>

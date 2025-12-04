@@ -64,7 +64,7 @@ export default function SessionColumn({ date }: SessionColumnProps) {
         <SessionContext.Provider value={session}>
           {/* Performed Exercises */}
           {session.performedExercises.map((pe) => (
-            <PECard pe={pe} />
+            <PECard pe={pe} key={pe.peid} />
           ))}
 
           {/* Create Exercise Component */}
