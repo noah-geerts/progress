@@ -1,10 +1,7 @@
 import { LoadingOutlined } from "@ant-design/icons";
 import { Button, Flex, Select, Spin, theme } from "antd";
-import { createRef, useEffect, useState } from "react";
-import {
-  useCreateExercise,
-  useGetAllExercises,
-} from "../services/exerciseService";
+import { useState } from "react";
+import { useGetAllExercises } from "../services/exerciseService";
 import { useSession } from "./SessionColumn";
 import { useCreatePE } from "../services/performedExerciseService";
 import { useProgressNotification } from "../wrappers/ProgressNotificationProvider";
@@ -59,10 +56,11 @@ export default function CreatePE() {
           api.error({
             message: "A network error occured while saving the new exercise",
           });
+          setState("default");
         },
+        onSuccess: () => setState("default"),
       }
     );
-    setState("default");
   };
 
   const [state, setState] = useState<State>("default");
@@ -125,6 +123,9 @@ export default function CreatePE() {
           setSelectedEid(eid);
         }}
         loading={isExercisesLoading}
+        onKeyDown={(e) => {
+          e.key === "Enter" && handleCreate();
+        }}
       />
       <Button
         variant="filled"

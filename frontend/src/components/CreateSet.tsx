@@ -108,6 +108,7 @@ export default function CreateSet({ onComplete, pe }: CreateSetProps) {
         suffix="reps"
         value={reps}
         onChange={(e) => setReps(e.target.value)}
+        onPressEnter={handleCreate}
       />
       <Options />
     </Flex>

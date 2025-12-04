@@ -74,6 +74,7 @@ export default function CreateExerciseModal({
           placeholder="Enter name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onPressEnter={handleCreateExercise}
         ></Input>
       </Flex>
     </Modal>

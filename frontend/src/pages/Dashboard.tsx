@@ -10,10 +10,10 @@ import { formatDateString, getDaysOfWeek } from "../common/dateHelpers";
 dayjs.extend(weekOfYear);
 
 export default function Dashboard() {
-  const { token } = theme.useToken();
-
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(dayjs().day(0));
   const daysOfWeek = getDaysOfWeek(firstDayOfWeek);
+
+  const { token } = theme.useToken();
 
   return (
     <InnerPage>
@@ -55,7 +55,10 @@ export default function Dashboard() {
         </Flex>
 
         {/** Sessions */}
-        <Flex gap={16} style={{ flex: 1, overflow: "scroll" }}>
+        <Flex
+          gap={16}
+          style={{ flex: 1, overflowX: "auto", overflowY: "hidden" }}
+        >
           {daysOfWeek.map((date) => (
             <SessionColumn date={date} key={date.format()} />
           ))}

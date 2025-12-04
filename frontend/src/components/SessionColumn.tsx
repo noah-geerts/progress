@@ -2,10 +2,11 @@ import type { Session } from "../domain/Session/Session";
 import { Col, Spin, theme } from "antd";
 import PECard from "../components/PECard";
 import CreatePE from "./CreatePE";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import { formatDateString } from "../common/dateHelpers";
 import { useGetSession } from "../services/sessionService";
 import { createContext, useContext } from "react";
+import CreateSession from "./CreateSession";
 
 type SessionColumnProps = {
   date: Dayjs;
@@ -29,7 +30,7 @@ export default function SessionColumn({ date }: SessionColumnProps) {
 
   // If the session exists, render it
   return (
-    <Col
+    <div
       style={{
         display: "flex",
         flexDirection: "column",
@@ -38,8 +39,9 @@ export default function SessionColumn({ date }: SessionColumnProps) {
         borderRadius: token.borderRadiusLG,
         gap: 8,
         padding: token.paddingSM,
+        width: session === undefined ? "200px" : "400px",
+        flexShrink: 0,
       }}
-      span={!isLoading && session ? 4 : 2}
     >
       {/* Title  */}
       <div
@@ -52,6 +54,7 @@ export default function SessionColumn({ date }: SessionColumnProps) {
         <p
           style={{
             fontWeight: token.fontWeightStrong,
+            color: session ? token.colorText : token.colorTextDescription,
             textAlign: "center",
           }}
         >
@@ -67,10 +70,12 @@ export default function SessionColumn({ date }: SessionColumnProps) {
             <PECard pe={pe} key={pe.peid} />
           ))}
 
-          {/* Create Exercise Component */}
+          {/* Create PE Component */}
           <CreatePE />
         </SessionContext.Provider>
       )}
+
+      {!session && <CreateSession date={date} />}
 
       {isLoading && (
         <>
@@ -78,6 +83,6 @@ export default function SessionColumn({ date }: SessionColumnProps) {
           <div></div>
         </>
       )}
-    </Col>
+    </div>
   );
 }

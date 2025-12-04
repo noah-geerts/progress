@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { Button, Table, Input, Space, Modal, Typography, Flex } from "antd";
+import {
+  Button,
+  Table,
+  Input,
+  Space,
+  Modal,
+  Typography,
+  Flex,
+  theme,
+} from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -28,6 +37,8 @@ export default function Exercises() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const api = useProgressNotification();
+
+  const { token } = theme.useToken();
 
   const { data: exercises, isLoading } = useGetAllExercises();
 
@@ -193,7 +204,7 @@ export default function Exercises() {
           dataSource={exercises}
           rowKey="eid"
           pagination={{ pageSize: 10 }}
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: token.colorBgContainer }}
           loading={isLoading}
         />
 

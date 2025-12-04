@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.noahgeerts.progress.domain.Exercise.Exercise;
@@ -16,7 +15,7 @@ import com.noahgeerts.progress.repository.ExerciseRepository;
 import com.noahgeerts.progress.repository.SessionRepository;
 
 @Component
-public class DataSeeder implements CommandLineRunner {
+public class DataSeeder {
 
   private static final String TEST_UID = "auth0|68d5beb4de9727f2ce19a4ca"; // Test UID
 
@@ -26,8 +25,7 @@ public class DataSeeder implements CommandLineRunner {
   @Autowired
   private SessionRepository sessionRepository;
 
-  @Override
-  public void run(String... args) throws Exception {
+  public void run() throws Exception {
     // Seed exercises first
     seedExercises();
 

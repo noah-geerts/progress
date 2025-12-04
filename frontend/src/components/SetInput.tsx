@@ -1,4 +1,4 @@
-import { Button, Flex, Input, Modal, notification, Spin } from "antd";
+import { Button, Flex, Input, Modal, Spin } from "antd";
 import Text from "antd/es/typography/Text";
 import type { PerformedSet } from "../domain/PerformedSet/PerformedSet";
 import { useState } from "react";
@@ -164,6 +164,7 @@ export default function SetInput({ set }: SetInputProps) {
         suffix="lbs"
         value={lbs}
         onChange={(e) => setLbs(e.target.value)}
+        onPressEnter={handleSave}
       />
       <Input
         disabled={inputState !== "editing"}
@@ -172,6 +173,7 @@ export default function SetInput({ set }: SetInputProps) {
         suffix="reps"
         value={reps}
         onChange={(e) => setReps(e.target.value)}
+        onPressEnter={handleSave}
       />
 
       {/** Post input buttons */}

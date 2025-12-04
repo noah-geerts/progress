@@ -1,4 +1,4 @@
-import { StrictMode, useState } from "react";
+import { createContext, StrictMode, useContext, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -15,8 +15,27 @@ import Dashboard from "./pages/Dashboard";
 import ProgressNotificationProvider from "./wrappers/ProgressNotificationProvider";
 import Exercises from "./pages/Exercises";
 
+// Tanstack Query Client
 const queryClient = new QueryClient();
 
+// Dark mode context
+type DarkModeValues = {
+  darkMode: boolean;
+  setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const DarkModeContext = createContext<DarkModeValues | null>(null);
+
+export function useDarkMode(): DarkModeValues {
+  const dark: DarkModeValues | null = useContext(DarkModeContext);
+
+  if (dark === null)
+    throw new Error("useDarkMode consumed outside of DarkModeContext.Provider");
+
+  return dark;
+}
+
+// Routing
 const router = createBrowserRouter([
   {
     element: <AuthLoading />,
@@ -37,6 +56,7 @@ const router = createBrowserRouter([
   },
 ]);
 
+// Root component
 function App() {
   const [darkMode, setDarkMode] = useState(false);
 
@@ -47,12 +67,14 @@ function App() {
         clientId="NE0G4iFTrYmrWnojflLovyHe8mh2fNoC"
         authorizationParams={{
           redirect_uri: window.location.origin,
-          audience: "http://localhost:3000",
+          audience: import.meta.env.VITE_API_AUDIENCE,
         }}
       >
         <ApiProvider>
           <QueryClientProvider client={queryClient}>
-            <ReactQueryDevtools initialIsOpen={false} />
+            {import.meta.env.DEV && (
+              <ReactQueryDevtools initialIsOpen={false} />
+            )}
             <ConfigProvider
               theme={
                 darkMode
@@ -74,7 +96,9 @@ function App() {
               }
             >
               <ProgressNotificationProvider>
-                <RouterProvider router={router} />
+                <DarkModeContext.Provider value={{ darkMode, setDarkMode }}>
+                  <RouterProvider router={router} />
+                </DarkModeContext.Provider>
               </ProgressNotificationProvider>
             </ConfigProvider>
           </QueryClientProvider>

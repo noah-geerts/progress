@@ -1,6 +1,8 @@
-import { Button, Layout, Menu, theme } from "antd";
+import { Button, Layout, Menu, Switch, theme } from "antd";
 import { Content, Header } from "antd/es/layout/layout";
 import { NavLink, useLocation } from "react-router";
+import { MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { useDarkMode } from "../main";
 
 const navItems = [
   { key: "/dashboard", label: <NavLink to="/dashboard">Dashboard</NavLink> },
@@ -15,16 +17,18 @@ export default function InnerPage({ children }: { children: React.ReactNode }) {
       fontWeightStrong,
       fontSizeLG,
       colorText,
+      colorBorder,
     },
   } = theme.useToken();
 
   const location = useLocation();
+  const { darkMode, setDarkMode } = useDarkMode();
 
   return (
     <Layout style={{ height: "100vh" }}>
       <Header
         style={{
-          borderBottomColor: "#EEEEEE",
+          borderBottomColor: colorBorder,
           borderBottomWidth: 1,
           borderBottomStyle: "solid",
           display: "flex",
@@ -46,7 +50,14 @@ export default function InnerPage({ children }: { children: React.ReactNode }) {
           items={navItems}
           mode="horizontal"
           selectedKeys={[location.pathname]}
-          style={{ flex: 1, minWidth: 0 }}
+          style={{ flex: 1, minWidth: 0, borderBottomColor: colorBorder }}
+        />
+        <Switch
+          checked={darkMode}
+          onChange={setDarkMode}
+          checkedChildren={<SunOutlined />}
+          unCheckedChildren={<MoonOutlined />}
+          title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
         />
         <Button variant="solid" color="danger">
           Log out
