@@ -15,10 +15,18 @@ Note: all instructions and commands below assume a Windows development environme
 These are for production only. For development, we hardcode the values in `application-dev.properties`. These can be changed if you would like to use different ports or modify the development PostgreSQL server configuration in `docker-compose.yml`.
 
 - AUTH_RESOURCE_SERVER: the URL of the auth resource server at which to fetch the public key to verify JWTs
-- PORT: the port to expose the REST API on
 - DB_URL: the URL of the Postgre DB
 - DB_USER: the username for DB login
 - DB_PASSWORD: the password for DB login
+
+## Deployment
+
+- Host a Postgres database to connect the backend to
+- Build the Docker image using the Dockerfile
+- Upload it to your desired hosting service
+- Ensure production values are injected by your hosting service for the above environment variables
+- Ensure `prod` is injected for `SPRING_PROFILES_ACTIVE` so that `application-prod.properties` is loaded
+- Run a Docker container based on the image
 
 ## API Reference
 

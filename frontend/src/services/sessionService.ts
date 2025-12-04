@@ -32,8 +32,7 @@ export const useGetSession = (localDate: string) => {
   return useQuery<Session, AxiosError>({
     queryKey: ["sessions", user?.sub, localDate],
     queryFn: getSession,
-    retry: (failureCount, error) =>
-      ![404].includes(error.response?.status ?? 0), // Do not retry on 404. This is a meaningful response
+    retry: (_, error) => ![404].includes(error.response?.status ?? 0), // Do not retry on 404. This is a meaningful response
   });
 };
 

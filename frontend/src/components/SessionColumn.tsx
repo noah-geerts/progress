@@ -1,5 +1,5 @@
 import type { Session } from "../domain/Session/Session";
-import { Col, Spin, theme } from "antd";
+import { Spin, theme } from "antd";
 import PECard from "../components/PECard";
 import CreatePE from "./CreatePE";
 import { Dayjs } from "dayjs";
