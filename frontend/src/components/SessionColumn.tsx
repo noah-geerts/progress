@@ -5,7 +5,7 @@ import CreatePE from "./CreatePE";
 import { Dayjs } from "dayjs";
 import { formatDateString } from "../common/dateHelpers";
 import { useGetSession } from "../services/sessionService";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useRef } from "react";
 import CreateSession from "./CreateSession";
 
 type SessionColumnProps = {
@@ -25,15 +25,32 @@ export function useSession() {
 
 export default function SessionColumn({ date }: SessionColumnProps) {
   const { token } = theme.useToken();
+  const columnRef = useRef<HTMLDivElement>(null);
 
   const { data: session, isLoading } = useGetSession(date.format("YYYY-MM-DD"));
+
+  const scrollToBottom = () => {
+    console.log("clicked");
+    if (columnRef.current) {
+      const element = columnRef.current;
+      setTimeout(() => {
+        element.scrollTo({
+          top: element.scrollHeight,
+          behavior: "smooth",
+        });
+      }, 200);
+    }
+  };
 
   // If the session exists, render it
   return (
     <div
+      ref={columnRef}
       style={{
         display: "flex",
         flexDirection: "column",
+        overflowY: "auto",
+        overflowX: "hidden",
         justifyContent: isLoading ? "space-between" : "flex-start",
         background: token.colorBgLayout,
         borderRadius: token.borderRadiusLG,
@@ -71,7 +88,9 @@ export default function SessionColumn({ date }: SessionColumnProps) {
           ))}
 
           {/* Create PE Component */}
-          <CreatePE />
+          <div onClick={scrollToBottom}>
+            <CreatePE />
+          </div>
         </SessionContext.Provider>
       )}
 
