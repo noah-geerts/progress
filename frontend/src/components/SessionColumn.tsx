@@ -75,7 +75,7 @@ export default function SessionColumn({ date }: SessionColumnProps) {
         </SessionContext.Provider>
       )}
 
-      {!session && <CreateSession date={date} />}
+      {!session && !isLoading && <CreateSession date={date} />}
 
       {isLoading && (
         <>
