@@ -3,6 +3,7 @@ import { Content, Header } from "antd/es/layout/layout";
 import { NavLink, useLocation } from "react-router";
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { useDarkMode } from "../main";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const navItems = [
   { key: "/dashboard", label: <NavLink to="/dashboard">Dashboard</NavLink> },
@@ -22,6 +23,7 @@ export default function InnerPage({ children }: { children: React.ReactNode }) {
   } = theme.useToken();
 
   const location = useLocation();
+  const { logout } = useAuth0();
   const { darkMode, setDarkMode } = useDarkMode();
 
   return (
@@ -59,7 +61,7 @@ export default function InnerPage({ children }: { children: React.ReactNode }) {
           unCheckedChildren={<MoonOutlined />}
           title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
         />
-        <Button variant="solid" color="danger">
+        <Button variant="solid" color="danger" onClick={() => logout()}>
           Log out
         </Button>
       </Header>
