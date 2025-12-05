@@ -7,6 +7,7 @@ import { useState } from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import { useDeletePE } from "../services/performedExerciseService";
 import { useProgressNotification } from "../wrappers/ProgressNotificationProvider";
+import { useSession } from "./SessionColumn";
 
 type ExerciseCardProps = { pe: PerformedExercise };
 
@@ -15,7 +16,9 @@ export default function PECard({ pe }: ExerciseCardProps) {
   const [creatingSet, setCreatingSet] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { mutate: deletePE, isPending } = useDeletePE(pe.peid);
+  const session = useSession();
+
+  const { mutate: deletePE, isPending } = useDeletePE(pe.peid, session.date);
 
   const api = useProgressNotification();
 

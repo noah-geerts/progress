@@ -6,7 +6,7 @@ import type { PerformedSet } from "../domain/PerformedSet/PerformedSet";
 import type { CreateSetDto } from "../domain/PerformedSet/CreatePerformedSetDto";
 import type { UpdateSetDto } from "../domain/PerformedSet/UpdatePerformedSetDto";
 
-export const useCreateSet = () => {
+export const useCreateSet = (sessionLocalDate: string) => {
   // Use auth, api, and tanstack query contexts
   const { user } = useAuth0();
   const api = useApi();
@@ -21,13 +21,13 @@ export const useCreateSet = () => {
     mutationFn: createSet,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
+        queryKey: ["sessions", user?.sub, sessionLocalDate],
       });
     },
   });
 };
 
-export const useUpdateSet = (stid: number) => {
+export const useUpdateSet = (stid: number, sessionLocalDate: string) => {
   // Use auth, api, and tanstack query contexts
   const { user } = useAuth0();
   const api = useApi();
@@ -44,13 +44,13 @@ export const useUpdateSet = (stid: number) => {
     mutationFn: updateSet,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
+        queryKey: ["sessions", user?.sub, sessionLocalDate],
       });
     },
   });
 };
 
-export const useDeleteSet = (stid: number) => {
+export const useDeleteSet = (stid: number, sessionLocalDate: string) => {
   // Use auth, api, and tanstack query contexts
   const { user } = useAuth0();
   const api = useApi();
@@ -64,7 +64,7 @@ export const useDeleteSet = (stid: number) => {
     mutationFn: deleteSet,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
+        queryKey: ["sessions", user?.sub, sessionLocalDate],
       });
     },
   });

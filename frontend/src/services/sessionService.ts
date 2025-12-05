@@ -6,33 +6,27 @@ import type { Session } from "../domain/Session/Session";
 import type { SessionRequestDto } from "../domain/Session/SessionRequestDto";
 
 export const useGetSession = (localDate: string) => {
-  // Use auth and api contexts
   const { user } = useAuth0();
   const api = useApi();
-  const queryClient = useQueryClient();
 
-  // Define query function using axios instance
-  const getSession = async (): Promise<Session> => {
+  const getSession = async (): Promise<Session | undefined> => {
     try {
       const response = await api.get<Session>("sessions/" + localDate);
       return response.data;
     } catch (error) {
-      // Set data to undefined on 404 because that means it doesn't exist
+      // Handle 404 as "no data" rather than an error
       if (axios.isAxiosError(error) && error.response?.status === 404) {
-        queryClient.setQueryData(
-          ["sessions", user?.sub, "2025-10-15"],
-          undefined
-        );
+        return undefined; // Return undefined instead of throwing
       }
-      throw error as AxiosError;
+      // Re-throw all other errors
+      throw error;
     }
   };
 
-  // Return tanstack query hook
-  return useQuery<Session, AxiosError>({
+  return useQuery<Session | undefined, AxiosError>({
     queryKey: ["sessions", user?.sub, localDate],
     queryFn: getSession,
-    retry: (_, error) => ![404].includes(error.response?.status ?? 0), // Do not retry on 404. This is a meaningful response
+    enabled: !!user,
   });
 };
 
@@ -57,7 +51,7 @@ export const useCreateSession = (localDate: string) => {
     mutationFn: createSession,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
+        queryKey: ["sessions", user?.sub, localDate],
       });
     },
   });
@@ -80,7 +74,7 @@ export const useUpdateSession = (localDate: string) => {
     mutationFn: updateSession,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
+        queryKey: ["sessions", user?.sub, localDate],
       });
     },
   });
@@ -101,7 +95,7 @@ export const useDeleteSession = (localDate: string) => {
     mutationFn: deleteSession,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
+        queryKey: ["sessions", user?.sub, localDate],
       });
     },
   });

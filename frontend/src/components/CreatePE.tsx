@@ -25,7 +25,9 @@ export default function CreatePE() {
   const session = useSession();
 
   // Create exercise in backend
-  const { mutate: createPE, isPending: isCreatePELoading } = useCreatePE();
+  const { mutate: createPE, isPending: isCreatePELoading } = useCreatePE(
+    session.date
+  );
 
   // Fetch exercises from backend
   const { data: exercises, isLoading: isExercisesLoading } =

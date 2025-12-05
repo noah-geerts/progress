@@ -6,7 +6,7 @@ import type { PerformedExercise } from "../domain/PerformedExercise/PerformedExe
 import type { CreatePerformedExerciseDto } from "../domain/PerformedExercise/CreatePerformedExerciseDto";
 import type { UpdatePerformedExerciseDto } from "../domain/PerformedExercise/UpdatePerformedExerciseDto";
 
-export const useCreatePE = () => {
+export const useCreatePE = (sessionLocalDate: string) => {
   // Use auth, api, and query contexts
   const { user } = useAuth0();
   const api = useApi();
@@ -24,14 +24,14 @@ export const useCreatePE = () => {
       mutationFn: createPE,
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["sessions", user?.sub],
+          queryKey: ["sessions", user?.sub, sessionLocalDate],
         });
       },
     }
   );
 };
 
-export const useUpdatePE = (peid: number) => {
+export const useUpdatePE = (peid: number, sessionLocalDate: string) => {
   // Consume api, auth, and queryClient contexts
   const { user } = useAuth0();
   const api = useApi();
@@ -49,14 +49,14 @@ export const useUpdatePE = (peid: number) => {
       mutationFn: updatePE,
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["sessions", user?.sub],
+          queryKey: ["sessions", user?.sub, sessionLocalDate],
         });
       },
     }
   );
 };
 
-export const useDeletePE = (peid: number) => {
+export const useDeletePE = (peid: number, sessionLocalDate: string) => {
   // Consume api, auth, and queryClient contexts
   const { user } = useAuth0();
   const api = useApi();
@@ -71,7 +71,7 @@ export const useDeletePE = (peid: number) => {
     mutationFn: deletePE,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
+        queryKey: ["sessions", user?.sub, sessionLocalDate],
       });
     },
   });

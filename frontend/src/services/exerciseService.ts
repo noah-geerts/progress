@@ -16,7 +16,7 @@ export const useGetAllExercises = () => {
 
   // Return useQuery hook
   return useQuery<Exercise[], AxiosError>({
-    queryKey: ["sessions", user?.sub],
+    queryKey: ["exercises", user?.sub],
     queryFn: getAllExercises,
   });
 };
@@ -36,7 +36,7 @@ export const useCreateExercise = () => {
     mutationFn: createExercise,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
+        queryKey: ["exercises", user?.sub],
       });
     },
   });
@@ -59,7 +59,7 @@ export const useUpdateExercise = (eid: number) => {
     mutationFn: updateExercise,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
+        queryKey: ["exercises", user?.sub],
       });
     },
   });
@@ -80,7 +80,7 @@ export const useDeleteExercise = (eid: number) => {
     mutationFn: deleteExercise,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["sessions", user?.sub],
+        queryKey: ["exercises", user?.sub],
       });
     },
   });

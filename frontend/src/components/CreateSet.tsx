@@ -8,6 +8,7 @@ import {
 import { useProgressNotification } from "../wrappers/ProgressNotificationProvider";
 import { useCreateSet } from "../services/setService";
 import type { PerformedExercise } from "../domain/PerformedExercise/PerformedExercise";
+import { useSession } from "./SessionColumn";
 
 type CreateSetProps = {
   onComplete: () => void;
@@ -20,7 +21,9 @@ export default function CreateSet({ onComplete, pe }: CreateSetProps) {
 
   const api = useProgressNotification();
 
-  const { mutate: createSet, isPending } = useCreateSet();
+  const session = useSession();
+
+  const { mutate: createSet, isPending } = useCreateSet(session.date);
 
   const handleCancel = () => {
     onComplete();

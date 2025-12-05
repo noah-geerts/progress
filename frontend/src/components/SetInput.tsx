@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { useProgressNotification } from "../wrappers/ProgressNotificationProvider";
 import { useDeleteSet, useUpdateSet } from "../services/setService";
+import { useSession } from "./SessionColumn";
 
 type SetInputProps = {
   set: PerformedSet;
@@ -26,11 +27,15 @@ export default function SetInput({ set }: SetInputProps) {
 
   const api = useProgressNotification();
 
+  const session = useSession();
+
   const { mutate: deleteSet, isPending: deleteSetPending } = useDeleteSet(
-    set.stid
+    set.stid,
+    session.date
   );
   const { mutate: updateSet, isPending: updateSetPending } = useUpdateSet(
-    set.stid
+    set.stid,
+    session.date
   );
 
   const handleDeleteSet = () => {
