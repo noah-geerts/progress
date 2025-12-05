@@ -1,5 +1,6 @@
 package com.noahgeerts.progress.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,15 +28,16 @@ public class SecurityConfig {
     return http.build();
   }
 
+  @Value("${cors.allowed-origins}")
+  private String allowedOrigins;
+
   @Bean
   public WebMvcConfigurer corsConfigurer() {
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins(
-                "http://localhost:4100",
-                "http://localhost:3000")
+            .allowedOrigins(allowedOrigins.split(","))
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true);

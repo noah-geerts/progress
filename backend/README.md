@@ -18,6 +18,7 @@ These are for production only. For development, we hardcode the values in `appli
 - DB_URL: the URL of the Postgre DB
 - DB_USER: the username for DB login
 - DB_PASSWORD: the password for DB login
+- CORS_ALLOWED_ORIGINS: a comma separated list of allowed origins for CORS for the API
 
 ## Deployment
 
