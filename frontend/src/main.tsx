@@ -14,6 +14,7 @@ import AuthGuard from "./wrappers/AuthGuard";
 import Dashboard from "./pages/Dashboard";
 import ProgressNotificationProvider from "./wrappers/ProgressNotificationProvider";
 import Exercises from "./pages/Exercises";
+import Calendar from "./pages/Calendar";
 
 // Tanstack Query Client
 const queryClient = new QueryClient();
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <Dashboard />,
+      },
+      {
+        path: "calendar",
+        element: <Calendar />,
       },
       {
         path: "exercises",

@@ -7,6 +7,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 const navItems = [
   { key: "/dashboard", label: <NavLink to="/dashboard">Dashboard</NavLink> },
+  { key: "/calendar", label: <NavLink to="/calendar">Calendar</NavLink> },
   { key: "/exercises", label: <NavLink to="/exercises">Exercises</NavLink> },
 ];
 

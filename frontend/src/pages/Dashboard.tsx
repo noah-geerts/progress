@@ -1,19 +1,32 @@
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Button, Flex, theme } from "antd";
 import InnerPage from "../wrappers/InnerPage";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import SessionColumn from "../components/SessionColumn";
 import { formatDateString, getDaysOfWeek } from "../common/dateHelpers";
+import { useSearchParams } from "react-router";
 
 dayjs.extend(weekOfYear);
 
 export default function Dashboard() {
+  const [searchParams] = useSearchParams();
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(dayjs().day(0));
   const daysOfWeek = getDaysOfWeek(firstDayOfWeek);
 
   const { token } = theme.useToken();
+
+  // Handle week query param from Calendar navigation
+  useEffect(() => {
+    const weekParam = searchParams.get("week");
+    if (weekParam) {
+      const weekDate = dayjs(weekParam);
+      if (weekDate.isValid()) {
+        setFirstDayOfWeek(weekDate);
+      }
+    }
+  }, [searchParams]);
 
   return (
     <InnerPage>

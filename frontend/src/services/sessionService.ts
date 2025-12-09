@@ -1,5 +1,10 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useApi } from "../wrappers/ApiProvider";
 import axios, { AxiosError } from "axios";
 import type { Session } from "../domain/Session/Session";
@@ -9,25 +14,73 @@ export const useGetSession = (localDate: string) => {
   const { user } = useAuth0();
   const api = useApi();
 
-  const getSession = async (): Promise<Session | undefined> => {
-    try {
-      const response = await api.get<Session>("sessions/" + localDate);
-      return response.data;
-    } catch (error) {
-      // Handle 404 as "no data" rather than an error
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
-        return undefined; // Return undefined instead of throwing
-      }
-      // Re-throw all other errors
-      throw error;
-    }
+  const getSession = async (): Promise<Session> => {
+    const response = await api.get<Session>("sessions/" + localDate);
+    return response.data;
   };
 
-  return useQuery<Session | undefined, AxiosError>({
+  return useQuery<Session, AxiosError>({
     queryKey: ["sessions", user?.sub, localDate],
     queryFn: getSession,
     enabled: !!user,
+    retry: (failureCount, error) => {
+      // Don't retry on 404 - it means the session doesn't exist
+      if (error.response?.status === 404) return false;
+      // Retry other errors up to 3 times
+      return failureCount < 3;
+    },
   });
+};
+
+// Hook to fetch multiple sessions for a list of dates
+export const useGetMonthSessions = (dates: string[]) => {
+  const { user } = useAuth0();
+  const api = useApi();
+
+  const getSession = async (localDate: string): Promise<Session> => {
+    const response = await api.get<Session>("sessions/" + localDate);
+    return response.data;
+  };
+
+  const queries = useQueries({
+    queries: dates.map((date) => ({
+      queryKey: ["sessions", user?.sub, date],
+      queryFn: () => getSession(date),
+      enabled: !!user,
+      retry: (failureCount: number, error: AxiosError) => {
+        // Don't retry on 404 - it means the session doesn't exist
+        if (error.response?.status === 404) return false;
+        // Retry other errors up to 3 times
+        return failureCount < 3;
+      },
+    })),
+  });
+
+  // Convert queries results to a Map
+  // For 404s (isError with 404 status), treat as undefined session
+  const monthSessions = new Map<string, Session | undefined>();
+  queries.forEach((query, index) => {
+    if (query.isSuccess) {
+      monthSessions.set(dates[index], query.data);
+    } else if (
+      query.isError &&
+      (query.error as AxiosError).response?.status === 404
+    ) {
+      monthSessions.set(dates[index], undefined);
+    }
+  });
+
+  const isLoading = queries.some((query) => query.isLoading);
+  const isError = queries.some(
+    (query) =>
+      query.isError && (query.error as AxiosError).response?.status !== 404
+  );
+
+  return {
+    monthSessions,
+    isLoading,
+    isError,
+  };
 };
 
 // localDate is passed to the hook rather than in mutate() because the query key depends on it as well as the path for the

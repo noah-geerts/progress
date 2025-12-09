@@ -1,12 +1,14 @@
 import type { Session } from "../domain/Session/Session";
-import { Spin, theme } from "antd";
+import { Button, Flex, Input, Spin, theme } from "antd";
 import PECard from "../components/PECard";
 import CreatePE from "./CreatePE";
 import { Dayjs } from "dayjs";
 import { formatDateString } from "../common/dateHelpers";
-import { useGetSession } from "../services/sessionService";
-import { createContext, useContext, useRef } from "react";
+import { useGetSession, useUpdateSession } from "../services/sessionService";
+import { createContext, useContext, useRef, useState } from "react";
 import CreateSession from "./CreateSession";
+import { EditOutlined, SaveOutlined } from "@ant-design/icons";
+import { useProgressNotification } from "../wrappers/ProgressNotificationProvider";
 
 type SessionColumnProps = {
   date: Dayjs;
@@ -26,9 +28,45 @@ export function useSession() {
 export default function SessionColumn({ date }: SessionColumnProps) {
   const { token } = theme.useToken();
   const columnRef = useRef<HTMLDivElement>(null);
+  const [editingName, setEditingName] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
 
   const { data: session, isLoading } = useGetSession(date.format("YYYY-MM-DD"));
+  const { mutate: updateSession, isPending } = useUpdateSession(
+    date.format("YYYY-MM-DD")
+  );
 
+  const [name, setName] = useState(session?.name);
+  const api = useProgressNotification();
+
+  // Functions to handle editing the session name
+  const editName = () => {
+    setName(session?.name);
+    setEditingName(true);
+  };
+
+  const saveName = () => {
+    if (!name || name === "") {
+      api.error({ message: "Cannot update session name to an empty name" });
+      return;
+    }
+
+    updateSession(
+      { name: name },
+      {
+        onError: () => {
+          setEditingName(false);
+          setName(session?.name);
+          api.error({
+            message: "Network error occured while updating session name",
+          });
+        },
+        onSuccess: () => setEditingName(false),
+      }
+    );
+  };
+
+  // Function to trigger scrolling to the bottom of the column when new PE's are added
   const scrollToBottom = () => {
     console.log("clicked");
     if (columnRef.current) {
@@ -41,6 +79,87 @@ export default function SessionColumn({ date }: SessionColumnProps) {
       }, 200);
     }
   };
+
+  const titleTextStyles: React.CSSProperties = {
+    fontWeight: token.fontWeightStrong,
+    textAlign: "center",
+    paddingBottom: "2.5px",
+  };
+
+  // Title content (gets complicated with ternaries in jsx)
+  let titleContent: React.ReactNode | undefined = undefined;
+  if (isLoading) {
+    titleContent = (
+      <p style={{ ...titleTextStyles, color: token.colorTextDescription }}>
+        {date.format("dddd, MMMM D")}&nbsp;-&nbsp;
+      </p>
+    );
+  } else if (session) {
+    titleContent = (
+      <Flex
+        gap={8}
+        align="center"
+        justify="center"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        style={{ width: "100%" }}
+      >
+        {!editingName && (
+          <>
+            <p
+              style={{
+                ...titleTextStyles,
+                color: token.colorText,
+              }}
+            >
+              {date.format("dddd, MMMM D")}&nbsp;-&nbsp;
+              {session.name}
+            </p>
+            {isHovering && (
+              <Button
+                size="small"
+                variant="text"
+                color="primary"
+                onClick={editName}
+                icon={<EditOutlined />}
+              />
+            )}
+          </>
+        )}
+        {editingName && (
+          <>
+            <Input
+              size="small"
+              style={{ height: "30px" }}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onPressEnter={saveName}
+              autoFocus
+            />
+            <Button
+              size="small"
+              variant="text"
+              color="primary"
+              onClick={saveName}
+              loading={isPending}
+              icon={!isPending && <SaveOutlined />}
+            />
+          </>
+        )}
+      </Flex>
+    );
+  } else {
+    titleContent = (
+      <p
+        style={{
+          ...titleTextStyles,
+          color: token.colorTextDescription,
+        }}
+      >
+        {date.format("dddd, MMMM D")}&nbsp;-&nbsp;Rest Day
+      </p>
+    );
+  }
 
   // If the session exists, render it
   return (
@@ -66,18 +185,14 @@ export default function SessionColumn({ date }: SessionColumnProps) {
           background: token.colorBgContainer,
           borderRadius: token.borderRadiusLG,
           padding: token.padding,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "8px",
         }}
       >
-        <p
-          style={{
-            fontWeight: token.fontWeightStrong,
-            color: session ? token.colorText : token.colorTextDescription,
-            textAlign: "center",
-          }}
-        >
-          {formatDateString(date.format())} -{" "}
-          {session ? session.name : isLoading ? "" : "Rest Day"}
-        </p>
+        {titleContent}
       </div>
 
       {session && (
