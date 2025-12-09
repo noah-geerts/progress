@@ -33,54 +33,33 @@ export const useGetSession = (localDate: string) => {
 };
 
 // Hook to fetch multiple sessions for a list of dates
-export const useGetMonthSessions = (dates: string[]) => {
+export const useGetMonthlySessions = (localDate: string) => {
   const { user } = useAuth0();
   const api = useApi();
+  const queryClient = useQueryClient();
 
-  const getSession = async (localDate: string): Promise<Session> => {
-    const response = await api.get<Session>("sessions/" + localDate);
+  const getMonthlySessions = async (): Promise<Session[]> => {
+    const response = await api.get<Session[]>("sessions/monthly/" + localDate);
     return response.data;
   };
 
-  const queries = useQueries({
-    queries: dates.map((date) => ({
-      queryKey: ["sessions", user?.sub, date],
-      queryFn: () => getSession(date),
-      enabled: !!user,
-      retry: (failureCount: number, error: AxiosError) => {
-        // Don't retry on 404 - it means the session doesn't exist
-        if (error.response?.status === 404) return false;
-        // Retry other errors up to 3 times
-        return failureCount < 3;
-      },
-    })),
+  const query = useQuery({
+    queryKey: ["sessions", user?.sub, "monthly", localDate],
+    queryFn: getMonthlySessions,
+    enabled: !!user,
+    select: (data) => {
+      // Optionally set individual session cache entries when data is selected
+      data.forEach((session) => {
+        queryClient.setQueryData(
+          ["sessions", user?.sub, session.date],
+          session
+        );
+      });
+      return data;
+    },
   });
 
-  // Convert queries results to a Map
-  // For 404s (isError with 404 status), treat as undefined session
-  const monthSessions = new Map<string, Session | undefined>();
-  queries.forEach((query, index) => {
-    if (query.isSuccess) {
-      monthSessions.set(dates[index], query.data);
-    } else if (
-      query.isError &&
-      (query.error as AxiosError).response?.status === 404
-    ) {
-      monthSessions.set(dates[index], undefined);
-    }
-  });
-
-  const isLoading = queries.some((query) => query.isLoading);
-  const isError = queries.some(
-    (query) =>
-      query.isError && (query.error as AxiosError).response?.status !== 404
-  );
-
-  return {
-    monthSessions,
-    isLoading,
-    isError,
-  };
+  return query;
 };
 
 // localDate is passed to the hook rather than in mutate() because the query key depends on it as well as the path for the

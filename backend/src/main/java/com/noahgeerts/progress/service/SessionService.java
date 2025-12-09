@@ -1,7 +1,9 @@
 package com.noahgeerts.progress.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -55,6 +57,37 @@ public class SessionService {
 
     // Return the session
     return mapper.map(session, SessionResponseDto.class);
+  }
+
+  /**
+   * 
+   * @param uid
+   * @param date
+   * @return A List of the sessions for the desired month (gets sessions for all
+   *         days in the month that the provided date falls in)
+   */
+  public List<SessionResponseDto> getMonthlySessions(String uid, LocalDate date) {
+    // Get the first day of the month
+    LocalDate firstDayOfMonth = date.withDayOfMonth(1);
+    int monthOfYear = date.getMonthValue();
+
+    // Iterate through all days of the month
+    ArrayList<SessionResponseDto> output = new ArrayList<>();
+    LocalDate currentDate = firstDayOfMonth;
+
+    while (currentDate.getMonthValue() == monthOfYear) {
+      try {
+        SessionResponseDto session = getSession(uid, currentDate);
+        output.add(session);
+      } catch (ResourceNotFoundException e) {
+        // Session doesn't exist for this date, continue to next day
+      }
+
+      // Move to next day (reassign because LocalDate is immutable)
+      currentDate = currentDate.plusDays(1);
+    }
+
+    return output;
   }
 
   /**

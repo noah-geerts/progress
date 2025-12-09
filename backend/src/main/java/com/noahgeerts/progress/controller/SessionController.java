@@ -2,6 +2,7 @@ package com.noahgeerts.progress.controller;
 
 import java.lang.annotation.Repeatable;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,13 @@ public class SessionController {
 
   public SessionController(SessionService sessionService) {
     this.sessionService = sessionService;
+  }
+
+  @GetMapping("/monthly/{date}")
+  public ResponseEntity<List<SessionResponseDto>> getMonthlySessions(@AuthenticationPrincipal Jwt jwt,
+      @PathVariable LocalDate date) {
+    List<SessionResponseDto> sessions = sessionService.getMonthlySessions(jwt.getSubject(), date);
+    return ResponseEntity.ok(sessions);
   }
 
   @GetMapping("/{date}")

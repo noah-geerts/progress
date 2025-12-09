@@ -129,14 +129,14 @@ export default function CalendarStatistics({
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <Card
-            bordered={false}
+            variant="borderless"
             style={{
               background: token.colorBgContainer,
               borderRadius: token.borderRadiusLG,
             }}
           >
             <Statistic
-              title="Average Sets per Week"
+              title="Average # of sets per week"
               value={avgSetsPerWeek}
               prefix={<BarChartOutlined />}
               valueStyle={{ color: token.colorPrimary }}
@@ -145,14 +145,14 @@ export default function CalendarStatistics({
         </Col>
         <Col span={24}>
           <Card
-            bordered={false}
+            variant="borderless"
             style={{
               background: token.colorBgContainer,
               borderRadius: token.borderRadiusLG,
             }}
           >
             <Statistic
-              title="Longest Streak"
+              title="Longest streak"
               value={longestStreak}
               suffix="days"
               prefix={<FireOutlined />}
@@ -162,14 +162,14 @@ export default function CalendarStatistics({
         </Col>
         <Col span={24}>
           <Card
-            bordered={false}
+            variant="borderless"
             style={{
               background: token.colorBgContainer,
               borderRadius: token.borderRadiusLG,
             }}
           >
             <Statistic
-              title="Average Sessions per Week"
+              title="Average # of sessions per week"
               value={avgSessionsPerWeek}
               prefix={<TrophyOutlined />}
               valueStyle={{ color: token.colorSuccess }}

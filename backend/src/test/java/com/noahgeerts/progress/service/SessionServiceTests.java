@@ -2,6 +2,12 @@ package com.noahgeerts.progress.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -151,6 +157,68 @@ public class SessionServiceTests {
       SessionRequestDto dto = SessionRequestDto.builder().name(TEST_SESSION_NAME).build();
       SessionResponseDto result = underTest.createSession(TEST_UID, TEST_SESSION_DATE, dto);
       assertThat(result.getName()).isEqualTo(TEST_SESSION_NAME);
+    }
+  }
+
+  @Nested
+  class GetMonthlySessions {
+    @Test
+    void shouldReturnOnlyExistingSessions_WhenMultipleCallsToGetSession() {
+      // Create a spy of the service to mock getSession calls
+      SessionService spyService = spy(underTest);
+
+      // Arrange - Mock getSession to return sessions for some dates and throw for
+      // others
+      LocalDate oct1 = LocalDate.of(2004, 10, 1);
+      LocalDate oct5 = LocalDate.of(2004, 10, 5);
+      LocalDate oct15 = LocalDate.of(2004, 10, 15);
+
+      Session session1 = Session.builder()
+          .ssid(1L).date(oct1).name("Session 1").uid(TEST_UID).build();
+      Session session5 = Session.builder()
+          .ssid(5L).date(oct5).name("Session 5").uid(TEST_UID).build();
+      Session session15 = Session.builder()
+          .ssid(15L).date(oct15).name("Session 15").uid(TEST_UID).build();
+
+      // Mock getSession to return sessions only for specific dates
+      doReturn(new ModelMapper().map(session1, SessionResponseDto.class))
+          .when(spyService).getSession(TEST_UID, oct1);
+      doReturn(new ModelMapper().map(session5, SessionResponseDto.class))
+          .when(spyService).getSession(TEST_UID, oct5);
+      doReturn(new ModelMapper().map(session15, SessionResponseDto.class))
+          .when(spyService).getSession(TEST_UID, oct15);
+
+      // For all other dates in October, throw ResourceNotFoundException
+      doThrow(new ResourceNotFoundException("No session"))
+          .when(spyService).getSession(eq(TEST_UID), argThat(date -> date.getMonthValue() == 10 &&
+              !date.equals(oct1) &&
+              !date.equals(oct5) &&
+              !date.equals(oct15)));
+
+      // Act - call getMonthlySessions with any October date
+      List<SessionResponseDto> result = spyService.getMonthlySessions(TEST_UID, oct1);
+
+      // Assert
+      assertThat(result).hasSize(3);
+      assertThat(result.get(0).getSsid()).isEqualTo(1L);
+      assertThat(result.get(1).getSsid()).isEqualTo(5L);
+      assertThat(result.get(2).getSsid()).isEqualTo(15L);
+    }
+
+    @Test
+    void shouldReturnEmptyList_WhenNoSessionsExistInMonth() {
+      // Create a spy
+      SessionService spyService = spy(underTest);
+
+      // Arrange - all getSession calls throw ResourceNotFoundException
+      doThrow(new ResourceNotFoundException("No session"))
+          .when(spyService).getSession(eq(TEST_UID), any(LocalDate.class));
+
+      // Act
+      List<SessionResponseDto> result = spyService.getMonthlySessions(TEST_UID, TEST_SESSION_DATE);
+
+      // Assert
+      assertThat(result).isEmpty();
     }
   }
 
