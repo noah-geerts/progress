@@ -1,5 +1,5 @@
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { Button, Flex, theme } from "antd";
+import { Button, DatePicker, Flex, Grid, theme } from "antd";
 import InnerPage from "../wrappers/InnerPage";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
@@ -13,9 +13,12 @@ dayjs.extend(weekOfYear);
 export default function Dashboard() {
   const [searchParams] = useSearchParams();
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(dayjs().day(0));
+  const [selectedDate, setSelectedDate] = useState(dayjs());
   const daysOfWeek = getDaysOfWeek(firstDayOfWeek);
 
   const { token } = theme.useToken();
+  const screens = Grid.useBreakpoint();
+  const isMobile = screens.md === false;
 
   // Handle week query param from Calendar navigation
   useEffect(() => {
@@ -24,9 +27,56 @@ export default function Dashboard() {
       const weekDate = dayjs(weekParam);
       if (weekDate.isValid()) {
         setFirstDayOfWeek(weekDate);
+        setSelectedDate(weekDate);
       }
     }
   }, [searchParams]);
+
+  if (isMobile) {
+    return (
+      <InnerPage>
+        <Flex vertical style={{ height: "100%" }}>
+          <Flex
+            align="center"
+            justify="space-between"
+            gap={token.paddingSM}
+            style={{ marginBottom: token.paddingLG }}
+          >
+            <Button
+              variant="text"
+              color="primary"
+              icon={<LeftOutlined />}
+              aria-label="Show previous day"
+              style={{ flex: 1 }}
+              onClick={() => setSelectedDate(selectedDate.subtract(1, "day"))}
+            />
+            <DatePicker
+              value={selectedDate}
+              onChange={(date) => date && setSelectedDate(date)}
+              format="ddd, MMM D, YYYY"
+              picker="date"
+              inputReadOnly
+              allowClear={false}
+              variant="borderless"
+              size="large"
+              aria-label="Select session date"
+            />
+            <Button
+              variant="text"
+              color="primary"
+              icon={<RightOutlined />}
+              aria-label="Show next day"
+              style={{ flex: 1 }}
+              onClick={() => setSelectedDate(selectedDate.add(1, "day"))}
+            />
+          </Flex>
+          <Flex style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
+            <SessionColumn date={selectedDate} />
+          </Flex>
+        </Flex>
+      </InnerPage>
+    );
+  }
 
   return (
     <InnerPage>
