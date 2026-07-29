@@ -174,7 +174,7 @@ export default function SessionColumn({ date }: SessionColumnProps) {
         borderRadius: token.borderRadiusLG,
         gap: 8,
         padding: token.paddingSM,
-        width: session === undefined ? "200px" : "400px",
+        flex: 1,
         flexShrink: 0,
       }}
     >
