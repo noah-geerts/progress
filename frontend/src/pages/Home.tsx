@@ -1,9 +1,10 @@
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Button, Flex, Layout, Switch, theme } from "antd";
+import { Button, Flex, Grid, Layout, Space, Switch, theme } from "antd";
 import { Content, Header } from "antd/es/layout/layout";
 import Title from "antd/es/typography/Title";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
+import { useEffect } from "react";
 import { useDarkMode } from "../main";
 
 export default function Home() {
@@ -11,6 +12,7 @@ export default function Home() {
     token: {
       colorBgContainer,
       paddingLG,
+      paddingXS,
       borderRadiusLG,
       fontSizeLG,
       fontWeightStrong,
@@ -21,6 +23,76 @@ export default function Home() {
   const { darkMode, setDarkMode } = useDarkMode();
 
   const { loginWithRedirect, isAuthenticated } = useAuth0();
+  const navigate = useNavigate();
+  const screens = Grid.useBreakpoint();
+  const isMobile = screens.md === false;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  const themeSwitch = (
+    <Switch
+      checked={darkMode}
+      onChange={setDarkMode}
+      checkedChildren={<SunOutlined />}
+      unCheckedChildren={<MoonOutlined />}
+      title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+    />
+  );
+
+  if (isMobile) {
+    return (
+      <Layout style={{ height: "100vh", background: colorBgContainer }}>
+        <Content
+          style={{
+            padding: paddingLG,
+            background: colorBgContainer,
+          }}
+        >
+          <Flex
+            vertical
+            align="center"
+            justify="center"
+            gap={172}
+            style={{ height: "100%" }}
+          >
+            <Flex vertical align="center" gap={0}>
+              <Title style={{ textAlign: "center" }}>
+                Welcome to Progress
+              </Title>
+              <Title level={4} style={{ maxWidth: 360, textAlign: "center", margin: 0 }}>
+                The workout tracking app with one goal: every week you train
+                harder than the last
+              </Title>
+            </Flex>
+            <Flex
+              vertical
+              align="center"
+              gap={paddingLG}
+              style={{ width: "100%" }}
+            >
+              {!isAuthenticated && (
+                <Button
+                  size="large"
+                  variant="solid"
+                  color="primary"
+                  shape={isMobile ? "round" : "default"}
+                  style={{ width: "100%", height: 52 }}
+                  onClick={() => loginWithRedirect()}
+                >
+                  Log in
+                </Button>
+              )}
+              {themeSwitch}
+            </Flex>
+          </Flex>
+        </Content>
+      </Layout>
+    );
+  }
 
   return (
     <Layout style={{ height: "100vh" }}>
@@ -42,13 +114,7 @@ export default function Home() {
           Progress
         </p>
         <Flex gap={24} align="center">
-          <Switch
-            checked={darkMode}
-            onChange={setDarkMode}
-            checkedChildren={<SunOutlined />}
-            unCheckedChildren={<MoonOutlined />}
-            title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-          />
+          {themeSwitch}
 
           {isAuthenticated ? (
             <Button variant="solid" color="primary">
