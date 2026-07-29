@@ -1,4 +1,4 @@
-import { Button, Layout, Menu, Switch, theme } from "antd";
+import { Button, Grid, Layout, Menu, Switch, theme } from "antd";
 import { Content, Header } from "antd/es/layout/layout";
 import { NavLink, useLocation } from "react-router";
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
@@ -26,46 +26,50 @@ export default function InnerPage({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { logout } = useAuth0();
   const { darkMode, setDarkMode } = useDarkMode();
+  const screens = Grid.useBreakpoint();
+  const isMobile = screens.md === false;
 
   return (
     <Layout style={{ height: "100vh" }}>
-      <Header
-        style={{
-          borderBottomColor: colorBorder,
-          borderBottomWidth: 1,
-          borderBottomStyle: "solid",
-          display: "flex",
-          alignItems: "center",
-          gap: 24,
-        }}
-      >
-        <NavLink
-          to="/"
+      {!isMobile && (
+        <Header
           style={{
-            fontSize: fontSizeLG,
-            fontWeight: fontWeightStrong,
-            color: colorText,
+            borderBottomColor: colorBorder,
+            borderBottomWidth: 1,
+            borderBottomStyle: "solid",
+            display: "flex",
+            alignItems: "center",
+            gap: 24,
           }}
         >
-          Progress
-        </NavLink>
-        <Menu
-          items={navItems}
-          mode="horizontal"
-          selectedKeys={[location.pathname]}
-          style={{ flex: 1, minWidth: 0, borderBottomColor: colorBorder }}
-        />
-        <Switch
-          checked={darkMode}
-          onChange={setDarkMode}
-          checkedChildren={<SunOutlined />}
-          unCheckedChildren={<MoonOutlined />}
-          title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-        />
-        <Button variant="solid" color="danger" onClick={() => logout()}>
-          Log out
-        </Button>
-      </Header>
+          <NavLink
+            to="/"
+            style={{
+              fontSize: fontSizeLG,
+              fontWeight: fontWeightStrong,
+              color: colorText,
+            }}
+          >
+            Progress
+          </NavLink>
+          <Menu
+            items={navItems}
+            mode="horizontal"
+            selectedKeys={[location.pathname]}
+            style={{ flex: 1, minWidth: 0, borderBottomColor: colorBorder }}
+          />
+          <Switch
+            checked={darkMode}
+            onChange={setDarkMode}
+            checkedChildren={<SunOutlined />}
+            unCheckedChildren={<MoonOutlined />}
+            title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+          />
+          <Button variant="solid" color="danger" onClick={() => logout()}>
+            Log out
+          </Button>
+        </Header>
+      )}
       <Content
         style={{
           background: colorBgContainer,
