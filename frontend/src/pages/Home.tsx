@@ -45,10 +45,18 @@ export default function Home() {
 
   if (isMobile) {
     return (
-      <Layout style={{ height: "100vh", background: colorBgContainer }}>
+      <Layout
+        style={{
+          height: "100dvh",
+          overflow: "hidden",
+          background: colorBgContainer,
+        }}
+      >
         <Content
           style={{
             padding: paddingLG,
+            minHeight: 0,
+            overflow: "auto",
             background: colorBgContainer,
           }}
         >
@@ -95,7 +103,7 @@ export default function Home() {
   }
 
   return (
-    <Layout style={{ height: "100vh" }}>
+    <Layout style={{ height: "100dvh", overflow: "hidden" }}>
       <Header
         style={{
           display: "flex",
@@ -131,7 +139,7 @@ export default function Home() {
           )}
         </Flex>
       </Header>
-      <Content style={{ padding: paddingLG }}>
+      <Content style={{ padding: paddingLG, minHeight: 0, overflow: "auto" }}>
         <Flex
           vertical
           align="center"

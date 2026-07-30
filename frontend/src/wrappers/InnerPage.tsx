@@ -30,7 +30,7 @@ export default function InnerPage({ children }: { children: React.ReactNode }) {
   const isMobile = screens.md === false;
 
   return (
-    <Layout style={{ height: "100vh" }}>
+    <Layout style={{ height: "100dvh", overflow: "hidden" }}>
       {!isMobile && (
         <Header
           style={{
@@ -74,6 +74,8 @@ export default function InnerPage({ children }: { children: React.ReactNode }) {
         style={{
           background: colorBgContainer,
           padding: paddingLG,
+          minHeight: 0,
+          overflow: "auto",
         }}
       >
         {children}
