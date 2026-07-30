@@ -65,14 +65,24 @@ export default function Exercises() {
 
     // Delete
     deleteExercise(undefined, {
-      onError: () => {
+      onError: (error) => {
+        const message =
+          error.response?.status === 422
+            ? "This exercise cannot be deleted because it is used in a logged workout."
+            : error.response?.status === 404
+              ? "This exercise no longer exists. Refresh the page and try again."
+              : "A network error occurred while deleting exercise " + deletingId;
+
         api.error({
-          message:
-            "Network error occured while deleting exercise " + deletingId,
+          message,
         });
         setDeleteModalOpen(false);
+        setDeletingId(null);
       },
-      onSuccess: () => setDeleteModalOpen(false),
+      onSuccess: () => {
+        setDeleteModalOpen(false);
+        setDeletingId(null);
+      },
     });
   };
 
