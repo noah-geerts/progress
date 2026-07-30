@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Button,
+  Pagination,
   Table,
   Input,
   Space,
   Modal,
+  Spin,
   Typography,
   Flex,
   Grid,
@@ -20,6 +22,7 @@ import {
 import InnerPage from "../wrappers/InnerPage";
 import CreateExerciseModal from "../components/CreateExerciseModal";
 import MobileMenu from "../components/MobileMenu";
+import MobileExerciseRow from "../components/MobileExerciseRow";
 import {
   useDeleteExercise,
   useGetAllExercises,
@@ -29,11 +32,15 @@ import { useProgressNotification } from "../wrappers/ProgressNotificationProvide
 import type { Exercise } from "../domain/Exercise/Exercise";
 
 const { Title, Text } = Typography;
+const MOBILE_PAGE_SIZE = 10;
 
 export default function Exercises() {
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [editingName, setEditingName] = useState("");
+  const [editingOriginalName, setEditingOriginalName] = useState("");
+  const [mobilePage, setMobilePage] = useState(1);
+  const editingRowRef = useRef<HTMLDivElement | null>(null);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -72,25 +79,113 @@ export default function Exercises() {
   // Update exercise functionality
   const { mutate: updateExercise, isPending: isUpdatePending } =
     useUpdateExercise(updatingId || -1);
+
+  const clearEditing = () => {
+    setUpdatingId(null);
+    setEditingName("");
+    setEditingOriginalName("");
+  };
+
   const handleUpdateExercise = () => {
     updateExercise(
-      { name: editingName },
+      { name: editingName.trim() },
       {
         onError: () => {
           api.error({
             message:
               "Network error occured while updating exercise " + updatingId,
           });
-          setUpdatingId(null);
-          setEditingName("");
+          clearEditing();
         },
-        onSuccess: () => {
-          setUpdatingId(null);
-          setEditingName("");
-        },
+        onSuccess: clearEditing,
       }
     );
   };
+
+  const finishMobileEditing = () => {
+    if (updatingId === null) return;
+
+    const nextName = editingName.trim();
+    if (nextName && nextName !== editingOriginalName) {
+      updateExercise(
+        { name: nextName },
+        {
+          onError: () =>
+            api.error({
+              message:
+                "Network error occured while updating exercise " + updatingId,
+            }),
+        }
+      );
+    }
+
+    clearEditing();
+  };
+
+  // Save mobile edits after the user pauses typing, without leaving edit mode.
+  useEffect(() => {
+    if (
+      !isMobile ||
+      updatingId === null ||
+      !editingName.trim() ||
+      editingName.trim() === editingOriginalName
+    ) {
+      return;
+    }
+
+    const nextName = editingName.trim();
+    const timeout = window.setTimeout(() => {
+      updateExercise(
+        { name: nextName },
+        {
+          onError: () =>
+            api.error({
+              message:
+                "Network error occured while updating exercise " + updatingId,
+            }),
+          onSuccess: () => setEditingOriginalName(nextName),
+        }
+      );
+    }, 600);
+
+    return () => window.clearTimeout(timeout);
+  }, [
+    api,
+    editingName,
+    editingOriginalName,
+    isMobile,
+    updateExercise,
+    updatingId,
+  ]);
+
+  // Leave mobile edit mode when the user taps anywhere outside the active row.
+  useEffect(() => {
+    if (!isMobile || updatingId === null) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!editingRowRef.current?.contains(event.target as Node)) {
+        finishMobileEditing();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [isMobile, updatingId, editingName, editingOriginalName]);
+
+  useEffect(() => {
+    setMobilePage(1);
+  }, [exercises?.length]);
+
+  const startMobileEditing = (exercise: Exercise) => {
+    setUpdatingId(exercise.eid);
+    setEditingName(exercise.name);
+    setEditingOriginalName(exercise.name);
+  };
+
+  const mobileExercises = (exercises ?? []).slice(
+    (mobilePage - 1) * MOBILE_PAGE_SIZE,
+    mobilePage * MOBILE_PAGE_SIZE
+  );
 
   // Defines how the columns of the antd table should be rendered
   const columns = [
@@ -212,6 +307,8 @@ export default function Exercises() {
             type="primary"
             icon={<PlusOutlined />}
             onClick={() => setCreateModalOpen(true)}
+            shape="round"
+            size="large"
             block
             style={{ marginBottom: "12px" }}
           >
@@ -219,14 +316,61 @@ export default function Exercises() {
           </Button>
         )}
 
-        <Table
-          columns={columns}
-          dataSource={exercises}
-          rowKey="eid"
-          pagination={{ pageSize: 10, align: isMobile ? "center" : "end" }}
-          style={{ backgroundColor: token.colorBgContainer }}
-          loading={isLoading}
-        />
+        {isMobile ? (
+          <div
+            style={{
+              overflow: "hidden",
+              border: `1px solid ${token.colorBorderSecondary}`,
+              borderRadius: token.borderRadiusLG,
+              background: token.colorBgContainer,
+            }}
+          >
+            {isLoading ? (
+              <Flex justify="center" style={{ padding: token.paddingLG }}>
+                <Spin />
+              </Flex>
+            ) : (
+              mobileExercises.map((exercise) => (
+                <MobileExerciseRow
+                  key={exercise.eid}
+                  exercise={exercise}
+                  editing={updatingId === exercise.eid}
+                  editingName={editingName}
+                  rowRef={
+                    updatingId === exercise.eid ? editingRowRef : undefined
+                  }
+                  onNameChange={setEditingName}
+                  onStartEditing={() => startMobileEditing(exercise)}
+                  onFinishEditing={finishMobileEditing}
+                  onDelete={() => {
+                    setDeletingId(exercise.eid);
+                    setDeleteModalOpen(true);
+                  }}
+                />
+              ))
+            )}
+            {!isLoading && (
+              <Flex justify="center" style={{ padding: token.paddingSM }}>
+                <Pagination
+                  current={mobilePage}
+                  pageSize={MOBILE_PAGE_SIZE}
+                  total={exercises?.length ?? 0}
+                  onChange={setMobilePage}
+                  showSizeChanger={false}
+                />
+              </Flex>
+            )}
+          </div>
+        ) : (
+          <Table
+            columns={columns}
+            dataSource={exercises}
+            rowKey="eid"
+            pagination={{ pageSize: MOBILE_PAGE_SIZE }}
+            style={{ backgroundColor: token.colorBgContainer }}
+            loading={isLoading}
+          />
+        )}
 
         {/** Create Exercise Modal */}
         {createModalOpen && (
