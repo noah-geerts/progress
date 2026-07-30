@@ -7,6 +7,7 @@ import {
   Modal,
   Typography,
   Flex,
+  Grid,
   theme,
 } from "antd";
 import {
@@ -18,6 +19,7 @@ import {
 } from "@ant-design/icons";
 import InnerPage from "../wrappers/InnerPage";
 import CreateExerciseModal from "../components/CreateExerciseModal";
+import MobileMenu from "../components/MobileMenu";
 import {
   useDeleteExercise,
   useGetAllExercises,
@@ -39,6 +41,8 @@ export default function Exercises() {
   const api = useProgressNotification();
 
   const { token } = theme.useToken();
+  const screens = Grid.useBreakpoint();
+  const isMobile = screens.md === false;
 
   const { data: exercises, isLoading } = useGetAllExercises();
 
@@ -95,7 +99,7 @@ export default function Exercises() {
       title: "Exercise ID",
       dataIndex: "eid",
       key: "eid",
-      width: 120,
+      width: isMobile ? 72 : 120,
     },
 
     // Exercise name column or input field if we're editing
@@ -111,7 +115,7 @@ export default function Exercises() {
               onChange={(e) => setEditingName(e.target.value)}
               onPressEnter={handleUpdateExercise}
               autoFocus
-              style={{ width: "auto" }}
+              style={{ width: "100%", maxWidth: "100%", minWidth: 0 }}
             />
           );
         }
@@ -123,7 +127,7 @@ export default function Exercises() {
     {
       title: "Actions",
       key: "actions",
-      width: 150,
+      width: isMobile ? 96 : 150,
       render: (_: any, record: Exercise) => {
         if (updatingId === record.eid) {
           // If we're editing this exercise, render save and cancel buttons
@@ -181,29 +185,45 @@ export default function Exercises() {
 
   return (
     <InnerPage>
-      <div style={{ padding: "24px" }}>
+      <div style={{ padding: isMobile ? "12px" : "24px" }}>
         <Flex
           justify="space-between"
           align="center"
-          style={{ marginBottom: "24px" }}
+          style={{ marginBottom: isMobile ? "12px" : "24px" }}
         >
           <Title level={2} style={{ margin: 0 }}>
             Exercises
           </Title>
+          {isMobile ? (
+            <MobileMenu />
+          ) : (
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setCreateModalOpen(true)}
+            >
+              Create Exercise
+            </Button>
+          )}
+        </Flex>
+
+        {isMobile && (
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={() => setCreateModalOpen(true)}
+            block
+            style={{ marginBottom: "12px" }}
           >
             Create Exercise
           </Button>
-        </Flex>
+        )}
 
         <Table
           columns={columns}
           dataSource={exercises}
           rowKey="eid"
-          pagination={{ pageSize: 10 }}
+          pagination={{ pageSize: 10, align: isMobile ? "center" : "end" }}
           style={{ backgroundColor: token.colorBgContainer }}
           loading={isLoading}
         />

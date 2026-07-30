@@ -1,10 +1,14 @@
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import {
+  LeftOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
 import { Button, DatePicker, Flex, Grid, theme } from "antd";
 import InnerPage from "../wrappers/InnerPage";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import SessionColumn from "../components/SessionColumn";
+import MobileMenu, { MOBILE_MENU_WIDTH } from "../components/MobileMenu";
 import { formatDateString, getDaysOfWeek } from "../common/dateHelpers";
 import { useSearchParams } from "react-router";
 
@@ -42,6 +46,10 @@ export default function Dashboard() {
             gap={token.paddingSM}
             style={{ marginBottom: token.paddingLG }}
           >
+            <div
+              aria-hidden="true"
+              style={{ width: MOBILE_MENU_WIDTH, flexShrink: 0 }}
+            />
             <Button
               variant="text"
               color="primary"
@@ -53,6 +61,8 @@ export default function Dashboard() {
             <DatePicker
               value={selectedDate}
               onChange={(date) => date && setSelectedDate(date)}
+              suffixIcon={null}
+              className="mobile-date-picker"
               format="ddd, MMM D, YYYY"
               picker="date"
               inputReadOnly
@@ -69,6 +79,7 @@ export default function Dashboard() {
               style={{ flex: 1 }}
               onClick={() => setSelectedDate(selectedDate.add(1, "day"))}
             />
+            <MobileMenu />
           </Flex>
           <Flex style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
             <SessionColumn date={selectedDate} />

@@ -20,6 +20,10 @@ body {
   width: 100vw;
 }
 
+.mobile-date-picker .ant-picker-input > input {
+  text-align: center;
+}
+
 p,
 h1,
 h2,
