@@ -18,7 +18,7 @@ export default function PECard({ pe }: ExerciseCardProps) {
 
   const session = useSession();
 
-  const { mutate: deletePE, isPending } = useDeletePE(pe.peid, session.date);
+  const { mutate: deletePE, isPending } = useDeletePE(pe.id, session.date);
 
   const api = useProgressNotification();
 
@@ -88,7 +88,7 @@ export default function PECard({ pe }: ExerciseCardProps) {
 
       {/** Set inputs and create new set input*/}
       {pe.sets.map((set) => (
-        <SetInput set={set} key={set.stid} />
+        <SetInput set={set} key={set.id} />
       ))}
       {creatingSet && (
         <CreateSet onComplete={() => setCreatingSet(false)} pe={pe} />

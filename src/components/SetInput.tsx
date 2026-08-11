@@ -30,11 +30,11 @@ export default function SetInput({ set }: SetInputProps) {
   const session = useSession();
 
   const { mutate: deleteSet, isPending: deleteSetPending } = useDeleteSet(
-    set.stid,
+    set.id,
     session.date
   );
   const { mutate: updateSet, isPending: updateSetPending } = useUpdateSet(
-    set.stid,
+    set.id,
     session.date
   );
 

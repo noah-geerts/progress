@@ -1,5 +1,5 @@
 export interface CreateSetDto {
-  peid: number;
+  performedExerciseId: string;
   position: number;
   reps: number;
   weight: number;

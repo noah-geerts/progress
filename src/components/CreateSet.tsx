@@ -57,7 +57,7 @@ export default function CreateSet({ onComplete, pe }: CreateSetProps) {
         position: nSets > 0 ? pe.sets[nSets - 1].position + 1 : 0,
         reps: repsNum,
         weight: lbsNum,
-        peid: pe.peid,
+        performedExerciseId: pe.id,
       },
       {
         onError: () => {
