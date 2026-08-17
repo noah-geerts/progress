@@ -10,7 +10,7 @@ import CreateExerciseModal from "./CreateExerciseModal";
 type State = "creating" | "default";
 
 type Option = {
-  value: number;
+  value: string;
   label: string;
 };
 
@@ -36,20 +36,20 @@ export default function CreatePE() {
   // Dropdown controls
   const dropdownOptions: Option[] =
     exercises?.map((exercise) => {
-      return { label: exercise.name, value: exercise.eid };
+      return { label: exercise.name, value: exercise.id };
     }) || [];
-  const [selectedEid, setSelectedEid] = useState<undefined | number>(undefined);
+  const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
 
   const handleCreate = () => {
-    if (selectedEid === undefined) {
+    if (selectedId === undefined) {
       api.error({ message: "Please select an exercise before confirming" });
       return;
     }
     const nPEs = session.performedExercises.length;
     createPE(
       {
-        eid: selectedEid,
-        ssid: session.ssid,
+        exerciseId: selectedId,
+        sessionId: session.id,
         position:
           nPEs > 0 ? session.performedExercises[nPEs - 1].position + 1 : 0,
       },
@@ -120,9 +120,9 @@ export default function CreatePE() {
             + Create new exercise
           </Button>
         }
-        value={selectedEid}
-        onChange={(eid: number) => {
-          setSelectedEid(eid);
+        value={selectedId}
+        onChange={(id: string) => {
+          setSelectedId(id);
         }}
         loading={isExercisesLoading}
         onKeyDown={(e) => {
@@ -133,7 +133,7 @@ export default function CreatePE() {
         variant="filled"
         color="primary"
         onClick={handleCreate}
-        disabled={isCreatePELoading || selectedEid === undefined}
+        disabled={isCreatePELoading || selectedId === undefined}
       >
         {isCreatePELoading ? (
           <Spin size="small" indicator={<LoadingOutlined />} />

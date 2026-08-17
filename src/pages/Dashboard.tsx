@@ -131,7 +131,7 @@ export default function Dashboard() {
         {/** Sessions */}
         <Flex
           gap={16}
-          style={{ flex: 1, overflowX: "auto", overflowY: "hidden" }}
+          style={{ flex: 1, width: "150%", overflowX: "auto", overflowY: "hidden" }}
         >
           {daysOfWeek.map((date) => (
             <SessionColumn date={date} key={date.format()} />

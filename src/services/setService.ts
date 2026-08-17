@@ -27,7 +27,7 @@ export const useCreateSet = (sessionLocalDate: string) => {
   });
 };
 
-export const useUpdateSet = (stid: number, sessionLocalDate: string) => {
+export const useUpdateSet = (id: string, sessionLocalDate: string) => {
   // Use auth, api, and tanstack query contexts
   const { user } = useAuth0();
   const api = useApi();
@@ -36,7 +36,7 @@ export const useUpdateSet = (stid: number, sessionLocalDate: string) => {
   // Define query function using axios instance
   const updateSet = (body: UpdateSetDto) =>
     api
-      .patch<PerformedSet>("sets/" + stid, body)
+      .patch<PerformedSet>("sets/" + id, body)
       .then((response) => response.data);
 
   // Return tanstack query hook
@@ -50,14 +50,14 @@ export const useUpdateSet = (stid: number, sessionLocalDate: string) => {
   });
 };
 
-export const useDeleteSet = (stid: number, sessionLocalDate: string) => {
+export const useDeleteSet = (id: string, sessionLocalDate: string) => {
   // Use auth, api, and tanstack query contexts
   const { user } = useAuth0();
   const api = useApi();
   const queryClient = useQueryClient();
 
   // Define query function using axios instance
-  const deleteSet = () => api.delete<void>("sets/" + stid).then(() => {});
+  const deleteSet = () => api.delete<void>("sets/" + id).then(() => {});
 
   // Return tanstack query hook
   return useMutation<void, AxiosError>({

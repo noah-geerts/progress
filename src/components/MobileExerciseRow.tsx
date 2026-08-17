@@ -1,6 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Input, theme } from "antd";
-import type { Dayjs } from "dayjs";
 import { useRef, useState, type RefObject } from "react";
 import type { Exercise } from "../domain/Exercise/Exercise";
 
@@ -52,7 +51,7 @@ export default function MobileExerciseRow({
   return (
     <div
       ref={editing ? rowRef : undefined}
-      data-exercise-row={exercise.eid}
+      data-exercise-row={exercise.id}
       style={{
         position: "relative",
         overflow: "hidden",
@@ -100,7 +99,7 @@ export default function MobileExerciseRow({
             fontSize: token.fontSizeSM,
           }}
         >
-          {exercise.eid}
+          {exercise.id}
         </span>
         {editing ? (
           <Input

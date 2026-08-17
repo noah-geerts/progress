@@ -1,3 +1,3 @@
 export interface UpdatePerformedExerciseDto {
-  eid: number;
+  exerciseId: string;
 }

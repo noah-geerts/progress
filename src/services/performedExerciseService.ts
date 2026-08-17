@@ -31,7 +31,7 @@ export const useCreatePE = (sessionLocalDate: string) => {
   );
 };
 
-export const useUpdatePE = (peid: number, sessionLocalDate: string) => {
+export const useUpdatePE = (id: string, sessionLocalDate: string) => {
   // Consume api, auth, and queryClient contexts
   const { user } = useAuth0();
   const api = useApi();
@@ -40,7 +40,7 @@ export const useUpdatePE = (peid: number, sessionLocalDate: string) => {
   // Define mutation function
   const updatePE = (body: UpdatePerformedExerciseDto) =>
     api
-      .patch<PerformedExercise>("performed-exercises/" + peid, body)
+      .patch<PerformedExercise>("performed-exercises/" + id, body)
       .then((response) => response.data);
 
   // Return useMutation hook
@@ -56,7 +56,7 @@ export const useUpdatePE = (peid: number, sessionLocalDate: string) => {
   );
 };
 
-export const useDeletePE = (peid: number, sessionLocalDate: string) => {
+export const useDeletePE = (id: string, sessionLocalDate: string) => {
   // Consume api, auth, and queryClient contexts
   const { user } = useAuth0();
   const api = useApi();
@@ -64,7 +64,7 @@ export const useDeletePE = (peid: number, sessionLocalDate: string) => {
 
   // Define mutation function
   const deletePE = () =>
-    api.delete<void>("performed-exercises/" + peid).then(() => {});
+    api.delete<void>("performed-exercises/" + id).then(() => {});
 
   // Return useMutation hook
   return useMutation<void, AxiosError>({

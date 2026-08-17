@@ -42,7 +42,7 @@ export const useCreateExercise = () => {
   });
 };
 
-export const useUpdateExercise = (eid: number) => {
+export const useUpdateExercise = (id: string) => {
   // Consume auth, api, and query client contextx
   const { user } = useAuth0();
   const api = useApi();
@@ -51,7 +51,7 @@ export const useUpdateExercise = (eid: number) => {
   // Define mutation function
   const updateExercise = (body: ExerciseRequestDto) =>
     api
-      .patch<Exercise>("exercises/" + eid, body)
+      .patch<Exercise>("exercises/" + id, body)
       .then((response) => response.data);
 
   // Return useMutation hook
@@ -65,7 +65,7 @@ export const useUpdateExercise = (eid: number) => {
   });
 };
 
-export const useDeleteExercise = (eid: number) => {
+export const useDeleteExercise = (id: string) => {
   // Consume auth, api, and query client contextx
   const { user } = useAuth0();
   const api = useApi();
@@ -73,7 +73,7 @@ export const useDeleteExercise = (eid: number) => {
 
   // Define mutation function
   const deleteExercise = () =>
-    api.delete<void>("exercises/" + eid).then(() => {});
+    api.delete<void>("exercises/" + id).then(() => {});
 
   // Return useMutation hook
   return useMutation<void, AxiosError>({

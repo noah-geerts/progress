@@ -35,8 +35,8 @@ const { Title, Text } = Typography;
 const MOBILE_PAGE_SIZE = 10;
 
 export default function Exercises() {
-  const [updatingId, setUpdatingId] = useState<number | null>(null);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [editingOriginalName, setEditingOriginalName] = useState("");
   const [mobilePage, setMobilePage] = useState(1);
@@ -55,7 +55,7 @@ export default function Exercises() {
 
   // Delete exercise functionality
   const { mutate: deleteExercise, isPending: isDeletePending } =
-    useDeleteExercise(deletingId || -1);
+    useDeleteExercise(deletingId ?? "");
   const handleDeleteExercise = () => {
     // Do not try deletion operation if no exercise was selected to delete
     if (deletingId === null) {
@@ -88,7 +88,7 @@ export default function Exercises() {
 
   // Update exercise functionality
   const { mutate: updateExercise, isPending: isUpdatePending } =
-    useUpdateExercise(updatingId || -1);
+    useUpdateExercise(updatingId ?? "");
 
   const clearEditing = () => {
     setUpdatingId(null);
@@ -187,7 +187,7 @@ export default function Exercises() {
   }, [exercises?.length]);
 
   const startMobileEditing = (exercise: Exercise) => {
-    setUpdatingId(exercise.eid);
+    setUpdatingId(exercise.id);
     setEditingName(exercise.name);
     setEditingOriginalName(exercise.name);
   };
@@ -202,8 +202,8 @@ export default function Exercises() {
     // Exercise ID column
     {
       title: "Exercise ID",
-      dataIndex: "eid",
-      key: "eid",
+      dataIndex: "id",
+      key: "id",
       width: isMobile ? 72 : 120,
     },
 
@@ -213,7 +213,7 @@ export default function Exercises() {
       dataIndex: "name",
       key: "name",
       render: (text: string, record: Exercise) => {
-        if (updatingId === record.eid) {
+        if (updatingId === record.id) {
           return (
             <Input
               value={editingName}
@@ -234,7 +234,7 @@ export default function Exercises() {
       key: "actions",
       width: isMobile ? 96 : 150,
       render: (_: any, record: Exercise) => {
-        if (updatingId === record.eid) {
+        if (updatingId === record.id) {
           // If we're editing this exercise, render save and cancel buttons
           return (
             <Space>
@@ -267,7 +267,7 @@ export default function Exercises() {
               type="text"
               icon={<EditOutlined />}
               onClick={() => {
-                setUpdatingId(record.eid);
+                setUpdatingId(record.id);
                 setEditingName(record.name);
               }}
               size="small"
@@ -276,7 +276,7 @@ export default function Exercises() {
               type="text"
               icon={<DeleteOutlined />}
               onClick={() => {
-                setDeletingId(record.eid);
+                setDeletingId(record.id);
                 setDeleteModalOpen(true);
               }}
               danger
@@ -342,18 +342,18 @@ export default function Exercises() {
             ) : (
               mobileExercises.map((exercise) => (
                 <MobileExerciseRow
-                  key={exercise.eid}
+                  key={exercise.id}
                   exercise={exercise}
-                  editing={updatingId === exercise.eid}
+                  editing={updatingId === exercise.id}
                   editingName={editingName}
                   rowRef={
-                    updatingId === exercise.eid ? editingRowRef : undefined
+                    updatingId === exercise.id ? editingRowRef : undefined
                   }
                   onNameChange={setEditingName}
                   onStartEditing={() => startMobileEditing(exercise)}
                   onFinishEditing={finishMobileEditing}
                   onDelete={() => {
-                    setDeletingId(exercise.eid);
+                    setDeletingId(exercise.id);
                     setDeleteModalOpen(true);
                   }}
                 />
@@ -375,7 +375,7 @@ export default function Exercises() {
           <Table
             columns={columns}
             dataSource={exercises}
-            rowKey="eid"
+            rowKey="id"
             pagination={{ pageSize: MOBILE_PAGE_SIZE }}
             style={{ backgroundColor: token.colorBgContainer }}
             loading={isLoading}

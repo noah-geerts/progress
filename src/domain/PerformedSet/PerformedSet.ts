@@ -1,5 +1,5 @@
 export interface PerformedSet {
-  stid: number;
+  id: string;
   position: number;
   reps: number;
   weight: number;
